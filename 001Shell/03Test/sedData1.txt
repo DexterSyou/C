@@ -1,7 +1,0 @@
-this is a test file for sed
-this is a another file for sed
-hello world
-this is a test file for sed
-this is a test file for sed
-this is a test file for sed
-this is a test file for sed
