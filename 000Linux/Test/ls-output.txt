@@ -1,1 +1,0 @@
-ls: ./mmmm: No such file or directory
