@@ -23,4 +23,53 @@
   GNOME
   Unity
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Linux 文件权限 
+root        UID -> 0
+
+useradd
+userdel
+usermod
+
+passwd
+chpasswd
+
+
+groupadd
+groupmod
+
+文件权限
+r w x
+4 2 1
+
+umask
+chmod 777 file
+chown
+chgrp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
