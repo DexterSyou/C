@@ -316,18 +316,160 @@ done
 break
 continue
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+$0 $1 $2 $3 $4 $5 $6 $7 $8 $9
+$(basename $0)
+$#
+#* 一个整体
+#@ 同一个字符串多个个体
+shift
+
+getopt命令
+getopt optstring parameters
+       optstring 中列出用到的每个命令行选项字母，每个需要参数值的选项字母加一个冒号
+
+       getopt ab:cd -a -b test1 -cd test2 test3
+	   ==> -a -b test1 -c -d -- test2 test3
+ 
+       set -- $（getopt -q ab：cd “$@”）
+
+getopts optstring variable
+       getopts ：ab：c opt
+
+       
+read
+    -p
+	-t 选项来指定一个计时器，当计时器过期后，read命令会返回一个非0退出状态码
+    -nl 
+	-s
+    REPLY环境变量会保存输入的所有数据 
+   
+    read会从文件中读取一行文本，但文件在没有内容时，read命令会退出并返回非零退出状态码
+	cat file | while read line
+	do
+	   
+	done
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Linux系统将每个对象当作文件处理，包括输入和输出进程
+文件描述符来标示每个文件对象，是非负数可以唯一标示会话中打开的文件
+
+0 STDIN
+   shell从STDIN文件描述符对应的键盘获得输入，在用户输入时处理每个字符
+   <   Linux会用重定向指定的文件来替换标准输入文件描述符
+   
+1 STDOUT
+   shell的标准输出，shell的所有输出（包括shell中运行的程序和脚本）会被定向到标准输出中
 
 
+2 STDERR 
+   shell的标准错误输出，shell或shell中运行的程序和脚本出错时生成的错误消息都会发送到这个位置
+   默认会导向STDOUT
+   ls -al 2> file1 1> file2
 
+>&
 
+exec 1>testout
+exec 2>testerr
+exec 0<testfile
 
+exec 3>testOut
+echo “xx” >&3
 
+exec 3>&- 关闭文件描述符
 
+lsof 命令会列出整个Linux系统打开的所有文件描述符
+ lsof -a -p $$ -d 0,1,2
 
+null文件的标准位置/dev/null
+cat /dev/null > testfile
 
+Linux系统有特殊目录，专供临时文件使用，Linux使用/tmp目录来存放不需要永久保留的文件
+大多数Linux发行版在系统启动时自动删除了/tmp目录的所有文件
+mktemp
+  tf=$(mktemp testing.XXXXXX)
+  mktemp -t test.XXXXXX  -t 全路径的临时文件
+  mktemp -d dir.XXXXXX   -d 临时目录
+ 
+记录消息
+ tee 将从STDIN过来的数据同时发往两处，一处是STDOUT，一处时tee命令所指定的文件名
+     tee filename
+	 tee -a filename
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+处理信号
+  Linux利用信号与运行在系统中的进程进行通信
+  1    SIGHUP  挂起进程
+  2    SIGINT  终止进程
+  3    SIGQUIT
+  9    SIGKILL 
+  15   SIGTERM
+  17   SIGSTOP
+  18   SIGTSTP  暂停进程          CTRL+Z
+  19   SIGCONT
+ 
+  Ctrl+C 生成SIGINT信号，并将其发送给当前shell中运行的所有进程
+  kill 9 PID
+
+  trap commands signals 
+  如果脚本收到了trap命令中列出的信号，该信号不再由shell处理，而是由本地处理
+  
+  trap “echo GoodBye ...”  EXIT
+  一个脚本可存在多个trap
+
+  后台运行脚本 &
+  nohup 会解除终端与进程的关联，进程也就不再同STDOUT 和 STDERR的消息重定向到一个名为
+  nohup.out的文件中
+
+  查看作业
+   $$变量来显示LInux系统分配给该脚本的PID，
+
+  jobs
+
+  bg
+  fg
+
+  nice命令
+   设置命令启动时的调度优先级，
+    nice -n 10   NI--> 10 指定新的优先级（降低优先级）
+    nice -10     NI--> 10 （降低优先级）  
+  renice 指定运行进程的PID来改变它的优先级
+    renice -p 10 -p PID
+
+  at命令来计划执行作业
+    指定Linux系统何时运行脚本
+	atd守护进程会检查系统上的一个特殊目录（/var/spool/at）来获取命令提交的作业
+	每60秒检查下这个目录，有作业时，atd守护进程会检查作业设置运行时间，如果时间个
+	当前时间匹配，atd守护进程就会运行此作业
+
+	at [-f filename] time
+	该作业会被提交到作业队列job queue， 
+
+	atq 查看系统中哪些作业在等待
+	atrm No 删除等待作业
+
+	cron时间表
+	  min hour dayofmonth month dayofweek command
+	  15  10   *          *     *         command
+      15  16   *          *     1         command
+ 	  00  12   1          *     *         command 
+      00  12   *          *     * if[`date +%d -d tommorrow`= 01];then;command
+  
+    crontab -l
+     
+	/ect/cron.daily   （每天运行一次）   将脚本复制到该目录
+	/ect/cron.hourly
+	/ect/cron.monthly
+	/ect/cron.weekly
+
+    anacron只会处理位于cron目录的程序
+	period delay identifier command
+	
 
 
 
