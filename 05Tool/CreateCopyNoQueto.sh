@@ -1,7 +1,7 @@
 #! /bin/sh
 #-----------------------
-#  該当shellはcopy句作成する
-#
+#  該当shellはno queto copy句作成する
+#             
 #  Writer：　SHAO
 #  Please Enter :
 #     Demo:  sh ./CreateCopy.sh  copyFile  
@@ -18,8 +18,8 @@ i=1
 # comment エリア
 rowhead="000000"
 
-quetoS="ダブルクォテーションSTART"
-quetoE="ダブルクォテーションEND"
+#quetoS="ダブルクォテーションSTART"
+#quetoE="ダブルクォテーションEND"
    cmn="かマン"
 #------------------------------
 #
@@ -36,22 +36,22 @@ do
  ketasu=`printf "%03d" $ketasu`
  
  #queto Start
- if [[ $gata == 'X' ]]
- then
-    echo "$rowhead*    $quetoS$j"
-	echo "$rowhead     $lcopy-QUETOSTART$j                PIC   X(001)"
- fi
+ #if [[ $gata == 'X' ]]
+ #then
+ #   echo "$rowhead*    $quetoS$j"
+ #	echo "$rowhead     $lcopy-QUETOSTART$j                PIC   X(001)"
+ #fi
 
 	echo "$rowhead*    $cmnt"
 	echo "$rowhead     $lcopy-$komokunm                   PIC   $gata($ketasu)"    
  
  # queto End 
- if [[ $gata == 'X' ]]
- then
-	echo "$rowhead*    $quetoE$j"
-	echo "$rowhead     $lcopy-QUETOEND$j                  PIC   X(001)"
-	((j++))
- fi
+ #if [[ $gata == 'X' ]]
+ #then
+ #	echo "$rowhead*    $quetoE$j"
+ #	echo "$rowhead     $lcopy-QUETOEND$j                  PIC   X(001)"
+ #	((j++))
+ #fi
 
     #coman 
     echo "$rowhead*    $cmn$i"
