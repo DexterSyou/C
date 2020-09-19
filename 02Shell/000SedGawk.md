@@ -157,8 +157,50 @@ gawk程序
 
   FS ---> 定义字段分隔符的另一种办法
 
+-------------------------
+gawk 进阶
+变量
+  内建变量
+  数据字段是由字段分隔符来划定的。默认情况下，字段分隔符是一个空白符（空格，制表符）
+	
+	gawk数据字段和记录变量
+	FIELDWIDTHS    根据提供的字段宽度来计算字段
+	FS             数据字段分隔符
+	RS             默认行行符
+	OFS            数据流中的数据字段， 默认一个空格，print命令的输出
+	ORS            默认换行符
+
+	awk 'BEGIN{FS='\n';RS=""}{print $1,$4}' dataFile
+
+  数据变量
+    ARGC
+	ARGV
+	  数组从索引0开始，代表是命令
+	ARGIND
+    CONVFMT
+	ENVIRON
+	  使用关联数组来提取shell环境变量
+	  awk 'BEGIN{ print ENVIRON["PATH"] }' 
+	ERRNO
+	FILENAME
+    IGNORECASE
+	  FNR
+	  含有当前数据文件中已处理过的记录数
+	  NF
+	  含有数据文件最后一个数据字段的数字值 --> $NF 字段变量
+	  NR
+	  含有已经处理过的记录总数
+	  多文件输入时，FNR的值会在处理每个数据文件时被重置
+	                NR的值会继续计数到处理完所有的数据文件
+	OFMT
+
+	RLENGTH
+	
+	RSTART
 
 
+  自定义变量
+    
 
 
 

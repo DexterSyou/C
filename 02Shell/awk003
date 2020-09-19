@@ -1,0 +1,13 @@
+{
+total=0
+i=1
+while(i<5){
+  total += $i
+  i++
+}
+
+avg = total / 4
+
+print $0"---->Average: ", avg 
+	
+}
