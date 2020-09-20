@@ -1,6 +1,110 @@
 ##
 
 ```
+#**************************************************************************
+# Shell
+#**************************************************************************
+                        shell
+kernel <----------------------------------> user
+每当登陆系统，我们就取得一个交互模式的shell （primary shell） 
+
+在process中，shell所下达的命令，均是shell所产生的子进程，这种现象可称为fork
+如果执行shell脚本，脚本中的命令则是由另一个非交互模式的子shell来执行的
+也就是primary shell 产生的sub shell
+
+/etc/shells
+  sh
+    burne shell       （sh
+    burne again shell （bash
+  csh
+    c  shell   （csh
+    tc shell   （tcsh
+    korn shell （ksh
+
+输入命令，碰到CR（Carriage Retrun ，由Enter键产生）
+command-name options argument
+   shell会依据IFS将command line所输入的文字给拆解为字段，然后
+   在针对特殊的字符（meta）先做处理，最后在重组整行command line
+
+   IFS internal Field Seperator
+     空白键   White Space
+     表格键   Tab
+     回车键键 Enter
+
+在linux系统中任何一个进程默认打开三个文件 
+  stdin
+  stdout
+  stderr
+
+echo
+  echo    有换行符号
+  echo -n 取消换行符号  
+  echo -e 启用反斜杠控制字符的转换 
+       -E
+
+command line的每一个charactor分为两种
+  literal  也就是普通的纯文字，对shell来说没有特殊功能
+  meta     对shell来说，具有特定功能的特殊保留字符
+      =  ¥  >  CR ...
+  shell command line 
+    主要是将整行line给分解break down 为每个单词（word）
+    词与词之间的分隔符就是IFS（Internal Field Seperator）
+    shell会对command line 作处理，然后再按词重组
+    所以
+	  A=“   abc”
+      echo $A    无空格输出 
+	  echo "$A"  有空格输出
+    
+	比如echo $i的解析过程
+	   首先将$i替换为字符串，然后对echo字符串中字符串分词，然后命令重组，输出结果。（注意IFS的存在）
+
+	    
+	IFS=; 是将IFS设置为null
+    关闭；meta 命令，可以';'   ,  ";" ,  \;
+    
+
+单引号‘ ，所有的meta均被关闭
+双引号“ ，大部分meta都会被关闭
+escape\ ，紧接在escape（跳脱字符）之后的单一meta才被关闭
+
+command line
+meta    line
+
+
+#**************************************************************************
+#  exec , source
+#**************************************************************************
+进程
+  所执行的任何程序，都是父进程产生的一个子进程，子进程在结束后，将返回到父进程
+  此现象在Linux中被称为fork
+  当子进程被产生时，将会从父进程那里获得一定的资源分配，及继承父进程的环境
+  环境变量只能从父进程传给子进程。
+
+  shell script是用sub-shell去执行的。从process来看，是parent process 产生一个
+  child process去执行，当child结束后，返回parent，但parent的环境不会因child改变
+  sub-shell的$pwd会因为cd而改变，返回primary shell时，$PWD是不会变更的
+
+所谓source，就是让script在当前shell内执行，而不是产生一个sub-shell来执行。
+exec 也是让script在同一个进程上执行，但是原有进程则被结束
+
+
+#**************************************************************************
+#  () , {}
+#**************************************************************************
+() 将command group 置于sub-shell（子shell）中去执行，也称为nested sub-shell
+
+{} 则是在同一个shell内完成，也称为non-named command group
+
+
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 <1>
    man
    info
@@ -146,8 +250,9 @@ history
 
 alias
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#**************************************************************************
+# Shell变量  
+#**************************************************************************
 全局环境变量
 printenv
 env
@@ -160,7 +265,7 @@ unset
     主启动文件
 $HOME/.bash_profile
 $HOME/.bashrc
-$HOME/.bash_login
+i$HOME/.bash_login
 $HOME/.profile
 
 交互式shell
@@ -260,9 +365,73 @@ fi
 [cond] || [cond]
 
 
+#**************************************************************************
+# $() ${} $(())  
+#**************************************************************************
+命令替换 将里面的结果替换出来
+  $()
+  ``
+变量替换
+ ${}
+
+ file=/dir1/dir2/dir3/my.file.txt
+ shell字符串的非贪婪（最小匹配）左删除
+   ${file#*/}
+      拿掉第一个/及其左边的字符串    dir1/dir2/dir3/my.file.txt
+   ${file#*.}
+       file.txt
+ shell字符串的贪婪（最大匹配）左删除
+   ${file##*/}
+      拿掉最后一个/及其左边的字符串 my.file.txt
+   ${file##*.}
+      txt
+ shell字符串的非贪婪（最小匹配）右删除
+   ${file%/*}  拿掉最后一个/及其右边的值    /dir1/dir2/dir3
+   ${file%.*}  拿掉最后一个.及其右边的值    /dir1/dir2/dir3/my.file
+   ${file%%/*} 拿掉第一个/及其右边的字符串  -->空
+   ${file%%.*} 拿掉第一个/及其右边的字符串
+ shell字符串取子串
+   ${s:pos:len} 取s，从pos（包括该字符）的长度为len的子串
+    ${file:0:5}
+    ${file:5:5}
+ shell字符串变量的替换
+    ${file/dir/path}     将第一个dir替换成path
+	${file//dir/path}    将全部dir替换成为path
+ shell针对变量的不同状态
+    ${file-my.file.txt}
+	 #如果file没有设定，则使用 使用my.file.txt作为返回值, 否则返回${file};(空值及非空值时，不作处理。);
+	${file:-my.file.txt}
+	 #如果file没有设定或者${file}为空值, 均使用my.file.txt作为其返回值，否则，
+	  返回${file}.(${file} 为非空值时，不作处理);
+	${file:+my.file.txt}
+	 #如果${file}为非空值, 则使用my.file.txt作为其返回值，否则，(未设定或者为空值时)不作处理。
+	${file+my.file.txt}
+	 #如果file已设定(为空值或非空值), 则使用my.file.txt作为其返回值，否则不作处理。(未设定时，不作处理);
+	${file=my.file.txt}
+ 	 #如果file为设定，则将file赋值为my.file.txt，同时将${file}作为其返回值；
+	  否则，file已设定(为空值或非空值)，则返回${file}。
+	${file:=my.file.txt}
+	 #如果file未设定或者${file}为空值, 则my.file.txt作为其返回值， 同时，将${file}赋值为my.file.txt，
+	  否则，(非空值时)不作处理。
+	${file?my.file.txt}
+     #如果file没有设定，则将my.file.txt输出至STDERR, 否侧， 已设定(空值与非空值时)，不作处理。
+    ${file:?my.file.txt}
+     #若果file未设定或者为空值，则将my.file.txt输出至STDERR，否则， 非空值时，不作任何处理。
+
+  unset与null以及non-null这三种状态的赋值； 一般而言，与null有关，
+  若不带:, null不受影响； 若带 :, 则连null值也受影响
+ 
+ shell字符串的变量长度
+  ${#file}
+ bash数组的处理方法
+  ${A[@]}  ${#A[@]}
+  ${A[*]}  ${#A[*]}
+  ${A[0]}  ${#A[0]}
+
 双括号
  (( expression )) 可以使用高级数学表达式
  expression是任意的数学赋值或比较表达式
+ 
  > 不需要转义
  var=10
  if(( $var ** 2 > 90 ))
@@ -316,15 +485,28 @@ done
 break
 continue
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+#**************************************************************************
+# $@ $* 
+#**************************************************************************
 $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
+注意$10 是被解释成$1后跟一个0
+    ${10}
+
 $(basename $0)
-$#
-#* 一个整体
-#@ 同一个字符串多个个体
-shift
+$# 可以抓出positional parameter 数量
+  [ $# = 0] 
+
+$* 一个整个单一字段
+$@ 同一个字符串多个个体
+“$*”  
+“$@” 
+
+
+shift 就是取消positional parameter 中最左边的参数（$0 不受影响），其余设置为1
+      shift 或 shift 1 就是取消$1 ，从而原本的$2变成$1，$3变成$2，依次类推
+
+
 
 getopt命令
 getopt optstring parameters

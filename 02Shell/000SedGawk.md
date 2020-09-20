@@ -166,7 +166,7 @@ gawk 进阶
 	gawk数据字段和记录变量
 	FIELDWIDTHS    根据提供的字段宽度来计算字段
 	FS             数据字段分隔符
-	RS             默认行行符
+	RS             默认换行符
 	OFS            数据流中的数据字段， 默认一个空格，print命令的输出
 	ORS            默认换行符
 
@@ -200,13 +200,150 @@ gawk 进阶
 
 
   自定义变量
+    awk -f script n=2 data
+	awk -v n=3 -f script data
+
+ 处理数组
+   关联数组
+   定义数组变量
+      var[index] = element
+
+   遍历数组变量
+    var 存储的是索引值 
+	for (var in array)
+	  {
+	    statements	
+	  }
+
+	delete array[index] 删除数组索引
+
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+使用模式
+    正则表达式
+       awk ‘BEGIN{FS=“,”} /11/{print $1}’ data
+       匹配操作符
+        ～   可以指定匹配操作符，数据字段变量 以及 要匹配的正则表达式
+		$1 ~ /^data/  过滤出第一个字段以文本data开头的所有记录
     
+	   awk 'BEGIN{FS=","} $2 ~ /^data2/{print $0}' data
+
+       awk -F: '$1 ~ /rich/{print $1,$NF}'  /etc/passwd
+
+	   排除匹配操作符
+	   !~ /expreession/
+       $1 ~ /expression/
+      
+    数学表达式
+	   x==y
+	   x<=y
+	   x<y
+	   x>=y
+	   x>y
+      awk -F: 'S1 == 0 { print $1 }' /etc/passwd
+结构化命令
+  if-then-else 格式的if语句
+  if(condition){
+	statement1
+  }else{
+    statement2
+  }
+
+  while(condition){
+    statements	
+  }
+  do{
+	statements
+  }while(condition)
+
+  break
+  continue
+  
+  for( variable assignment; condition; iteration process)
+
+格式化打印
+  printf “format string”，var1，var2 ...
+
+  format string 是格式化输出的关键，用文本元素 和 格式化指定符来集体显示指定如何呈现格式化输出
+  格式化指定符是一种特殊的代码，会指明显示什么类型的变量 以及 如何显示
+  awk程序会将每个格式化指定作为占位符，共命令中的变量使用
+
+     格式指定符 %[modifier]control-letter
+	     control-letter
+		    c   ASCII
+			d 
+            i
+			e
+			f
+			g
+			o
+			s
+			x
+			x
+         width prec -
+
+内建函数
+   数学函数
+      atan2(x,y)
+	  cos(x)
+	  exp(x)
+	  int(x)
+	  log(x)
+	  rand()
+	  sin(x)
+	  sqrt(x)
+	  srand(x)
+
+	  rand()
+	  x=int(10*rand())
+
+      and(v1,v2) 
+	  compl(val)
+	  lshift(val,count)
+      or(v1,v2)
+	  rshift(val,count)
+	  xor(v1,v2)
+
+  字符串函数
+     asort(s [,d])
+	 ...
+	 index([s])
+	 match(s,r[,a])
+     split(s,a,[,r])
+	 sprintf(format,variables)
+	 sub(r,s[,t])
+	 substr(s,i [,n])
+	 tolower(s)
+	 toupper(s)
+
+   时间函数
+     mktime(datespec)
+	 strftime(format [,timestamp])
+	 systime()
+
+   自定义函数
+     function name([variables]){
+	    statements	
+	    return value  
+	 }
+   函数放在BEGIN之前
+   Demo:
+	 awk -f funclib -f script data
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+    
 
 
 
