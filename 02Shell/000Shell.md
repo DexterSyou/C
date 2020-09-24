@@ -95,69 +95,96 @@ exec 也是让script在同一个进程上执行，但是原有进程则被结束
 
 {} 则是在同一个shell内完成，也称为non-named command group
 
+#**************************************************************************
+#  文件  目录 
+#**************************************************************************
+@字符串：有限字符的序列，数据元素位字符的线性表，一种数据的逻辑结构
+ 字符  ：计算机程序设计 及 操作时使用的符号
+         字母，数字，空格符，提示符等
 
+  ${str/yyy/xxx}
+  ${str//yyy/xxx}
 
-
-
-
-
-
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-<1>
-   man
-   info
-   -help
-
-<2>
   根驱动器（虚拟目录核心）
     系统文件
     常见目录名都基于FHS
 
-<3>
-   cd
-   pwd
-   ～  主目录
-   . 
-   ..
-   
-<4>
-4-1 显示文件
-    ls
+@帮助命令
+   man
+   info
+   -help
+
+@文件
+   显示文件ls
       -afr
 	  --time=atime      访问时间
 	  -l
 	   文件类型文件权限 文件硬链接总数 用户名 组名 文件大小 上次修改时间 文件名或目录名
        通配符？ *  [ ] 等
+  创建文件touch
+  复制文件cp source destination
+  链接文件
+    符号链接ln -s
+	硬链接 ln
+  重命名文件mv
+  删除文件rm 
+@目录    
+  创建目录
+    mkdir
+    mkdir -p
+    rmdir
+    rm -ri 
 
-4-2 创建文件
-    touch
-4-3 复制文件
-    cp source destination
-	  -i
-	  -r
-4-4 链接文件
-    符号链接
-	  ln -s
-	硬链接 
-      ln
-4-5 重命名文件
-    mv
-	  -i
-4-6 删除文件
-    rm 
-	  -i
-    
-<5> 
-   创建目录
-   mkdir
-   mkdir -p
-   rmdir
+@处理数据文件
+  排序 
+  sort -cmu -o output_file [other options] +pos1 +pos2 input_file
+  -n 指定分类是域上的数字分类
+  -b 使用域进行分类，忽略第一个空格
+  -c 测试文件是否已经分类
+  -m 合并两个分类文件
+  -u 删除所有复制行
+  -o 存储sort结果的输出文件名
+  -M 三个字母的月份
+  sort -t ‘：’ -k 3 -n file
+  
+  删除相邻的重复行
+  uniq file
+    -d 只输出file重复行，且只输出一次
+	-u 只输出file中的唯一行
+	-c 在每行前显示重复次数
+	    -cd
+	-i 比较时忽略大小写
+	-f 前n个域被忽略
+	-n 测试一部分的唯一性
+  sort file | uniq 删除重复不相邻的行
+  
+  将两个分类文本的行连接在一起
+  join [options] file1 file2
+  
+  用来从标准输入或文本文件剪切或域
+  cut [options] file1 file2
 
-   rm -ri 
+  -f 指定剪切域
+     -f 1，5
+	 -f 1，5-6
+  -d 指定分隔符
+  -c 指定剪切字符数
+     -c 1，5，7
+	 -c 1-7
+  
+  将数据贴到相关文件
+  paste -d -s file1 file2
 
-<6> 
+  将文件切分为小文件
+  split -output_file_size input_filename output_filename
+
+  搜索数据
+  grep [options] pattern [file]
+       -v
+	   -n
+	   -c
+	   -e f -e t --> [tf]
+  查看
    file
    cat
    cat -n
@@ -168,6 +195,8 @@ exec 也是让script在同一个进程上执行，但是原有进程则被结束
    tail
    tail -n（n为从头开始的行数） 
    head -n（n为从尾开始的行数）
+
+
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -201,18 +230,6 @@ killall
   df -h
   du -chs
 
-
-处理数据文件
-排序
-  sort -n file
-  sort -M file
-  sort -t ‘：’ -k 3 -n file
-搜索数据
-  grep [options] pattern [file]
-       -v
-	   -n
-	   -c
-	   -e f -e t --> [tf]
 
 压缩数据
   gzip
@@ -307,8 +324,12 @@ $? 退出状态码
 
 exit
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+#**************************************************************************
+# 分支  
+#**************************************************************************
 <1>
   if command 退出状态码为0时执行
   then
@@ -341,6 +362,7 @@ exit
     command set 4
   fi
 
+@条件测试
 if-then语句不能测试命令状态码之外的条件，test命令提供了
 在if-then语句中测试不同条件的途径，test命令中列出的条件成立
 test命令就会退出并返回退出状态码0
@@ -350,7 +372,6 @@ test condition
 	   文件比较    -d -e -f -r -s -w -x -O -G 
 	               file1 -nt file2
 				   file1 -ot file2
-
 if test condition
 then
    commands
@@ -361,8 +382,12 @@ then
     commands
 fi
 
+@逻辑测试的组合
+-a -o ！
 [cond] && [cond]
 [cond] || [cond]
+
+@Shell的内置命令true返回0， false 返回1
 
 
 #**************************************************************************
@@ -482,8 +507,10 @@ do
    other commands
 done
 
-break
-continue
+break      结束loop
+continue   强迫进入下一次循环动作
+return     结束function
+exit       结束script/shell
 
 
 #**************************************************************************
@@ -502,11 +529,26 @@ $@ 同一个字符串多个个体
 “$*”  
 “$@” 
 
-
 shift 就是取消positional parameter 中最左边的参数（$0 不受影响），其余设置为1
       shift 或 shift 1 就是取消$1 ，从而原本的$2变成$1，$3变成$2，依次类推
 
+$? 得到刚刚结束那个进程传回的值 return value（0～255）
+   用来判断进程的退出状态
+   0 值 成功执行--> 真（true）
+   非0 命令没有成功执行 ---> 假（false）
 
+   test expression 支持测试对象只有三种
+   [ expression ] 
+      string
+	  integer
+	  file
+      expression测试为真，test返回0 （true） ，否则返回0
+	  expression1 -a expression2 两个expression都为真
+	  expression1 -o expression2 两个expression都为假
+    
+	command1 && command2    command2 只有在command1 的 RV为0（true）   的条件下执行
+	command1 || command2    command2 只有在command1 的 RV为非0（false）的条件下执行
+    
 
 getopt命令
 getopt optstring parameters
@@ -534,41 +576,57 @@ read
 	   
 	done
 
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#**************************************************************************
+#  文件描述符 I/O redirection 
+#**************************************************************************
 Linux系统将每个对象当作文件处理，包括输入和输出进程
-文件描述符来标示每个文件对象，是非负数可以唯一标示会话中打开的文件
+File Descriptor （fd， 文件描述符）来标示每个文件对象，是非负数可以唯一标示会话中打开的文件
 
-0 STDIN
+Linux中任何一个进程都默认打开三个文件
+0： STDIN 标准情况下 keyboard关联 
    shell从STDIN文件描述符对应的键盘获得输入，在用户输入时处理每个字符
-   <   Linux会用重定向指定的文件来替换标准输入文件描述符
    
-1 STDOUT
+1： STDOUT monitor关联
    shell的标准输出，shell的所有输出（包括shell中运行的程序和脚本）会被定向到标准输出中
 
-
-2 STDERR 
+2 ：STDERR monitor关联
    shell的标准错误输出，shell或shell中运行的程序和脚本出错时生成的错误消息都会发送到这个位置
    默认会导向STDOUT
    ls -al 2> file1 1> file2
 
->&
+I/O 重定向 
+  用< 来改变读进的数据通道（stdin），使之从指定的文件读进
+  用> 来改变输出的数据通道（stdout，stderr），使之输出到指定的文件
 
-exec 1>testout
-exec 2>testerr
-exec 0<testfile
+  输入重定向 n< input redirection
+             0 是< 的预设值， < 与 0< 是一样的
+     
+	         here document
+			 它可以让我们输入一段文本，直到读到<< 后指定的字符串
+			 cat << EOF
+			   one
+			   two
+			   three
+			   EOF
+  重定向输出 >n output redirection
+             1> 改变stdout 的输出通道 1> 与 >是相同的
+             2> 改变stderr 的输出通道
 
-exec 3>testOut
-echo “xx” >&3
+  2>&1  stderr 并入 stdout
+  1>&2  stdout 并入 stderr 
 
-exec 3>&- 关闭文件描述符
+  /dev/null
+     null文件的标准位置/dev/null
+     cat /dev/null > testfile
+  
+  >> append
+
+  stdout 与 stderr 的管道线准备好，才会从stdin读入数据
+
+  exec 3>&- 关闭文件描述符
 
 lsof 命令会列出整个Linux系统打开的所有文件描述符
  lsof -a -p $$ -d 0,1,2
-
-null文件的标准位置/dev/null
-cat /dev/null > testfile
 
 Linux系统有特殊目录，专供临时文件使用，Linux使用/tmp目录来存放不需要永久保留的文件
 大多数Linux发行版在系统启动时自动删除了/tmp目录的所有文件
@@ -577,7 +635,9 @@ mktemp
   mktemp -t test.XXXXXX  -t 全路径的临时文件
   mktemp -d dir.XXXXXX   -d 临时目录
  
-记录消息
+管道 pipe line
+ cmd1 | cmd2 ....... 
+ 记录消息
  tee 将从STDIN过来的数据同时发往两处，一处是STDOUT，一处时tee命令所指定的文件名
      tee filename
 	 tee -a filename
@@ -653,14 +713,47 @@ mktemp
 	period delay identifier command
 	
 
+#**************************************************************************
+#  *Debbug
+#**************************************************************************
+@Shell
+ #在shell脚本中输出调试信息
+ trap 命令用于捕获指定的信号并执行预定的命令
+      执行的命令可以是任何合法的shell语句，也可以是函数
+ trap ‘cmd’ signal
+ shell脚本在执行时，会产生三个所谓的伪信号（由shell产生的），其他信号由操作系统产生
+    EXIT 从一个函数退出 或 整个脚本执行完毕
+	ERR  当一条命令返回非0状态时（代表命令执行不成功）
+	DEBUG 脚本中每一条命令执行之前
+
+ 
+ tee
+
+ if [ “¥DEBUG” = “true” ]；then
+   echo “debugging”
+ fi
+
+ #使用shell的执行选项
+ -n          只读shell脚本，不实际执行 （检查语法是否错误）
+ -x          跟踪方式，显示锁执行的每一条命令
+    $LINENO
+	$FUNCNAME
+	$PS4
+ -c “string” 从strings中读取命令
 
 
 
 
 
 
-
-
+#**************************************************************************
+#  *资料 
+#**************************************************************************
+# Books
+#   Advanced Bash-Scripting Guide
+# Net
+#   ChinaUnix.nex
+#   LinuxSir.org
 
 
 
