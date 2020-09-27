@@ -1,4 +1,4 @@
-##
+## Shell
 
 ```
 #**************************************************************************
@@ -8,11 +8,12 @@
 kernel <----------------------------------> user
 每当登陆系统，我们就取得一个交互模式的shell （primary shell） 
 
-在process中，shell所下达的命令，均是shell所产生的子进程，这种现象可称为fork
-如果执行shell脚本，脚本中的命令则是由另一个非交互模式的子shell来执行的
-也就是primary shell 产生的sub shell
+@fork
+ 在process中，shell所下达的命令，均是shell所产生的子进程，这种现象可称为fork
+ 如果执行shell脚本，脚本中的命令则是由另一个非交互模式的子shell来执行的
+ 也就是primary shell 产生的sub shell
 
-/etc/shells
+ /etc/shells
   sh
     burne shell       （sh
     burne again shell （bash
@@ -21,8 +22,8 @@ kernel <----------------------------------> user
     tc shell   （tcsh
     korn shell （ksh
 
-输入命令，碰到CR（Carriage Retrun ，由Enter键产生）
-command-name options argument
+@输入命令，碰到CR（Carriage Retrun ，由Enter键产生）
+ command-name options argument
    shell会依据IFS将command line所输入的文字给拆解为字段，然后
    在针对特殊的字符（meta）先做处理，最后在重组整行command line
 
@@ -31,18 +32,19 @@ command-name options argument
      表格键   Tab
      回车键键 Enter
 
-在linux系统中任何一个进程默认打开三个文件 
+ 在linux系统中任何一个进程默认打开三个文件 
   stdin
   stdout
   stderr
 
-echo
+ echo
   echo    有换行符号
   echo -n 取消换行符号  
   echo -e 启用反斜杠控制字符的转换 
        -E
 
-command line的每一个charactor分为两种
+
+@command line的每一个charactor分为两种
   literal  也就是普通的纯文字，对shell来说没有特殊功能
   meta     对shell来说，具有特定功能的特殊保留字符
       =  ¥  >  CR ...
@@ -70,11 +72,10 @@ escape\ ，紧接在escape（跳脱字符）之后的单一meta才被关闭
 command line
 meta    line
 
-
 #**************************************************************************
 #  exec , source
 #**************************************************************************
-进程
+@进程
   所执行的任何程序，都是父进程产生的一个子进程，子进程在结束后，将返回到父进程
   此现象在Linux中被称为fork
   当子进程被产生时，将会从父进程那里获得一定的资源分配，及继承父进程的环境
@@ -105,10 +106,33 @@ exec 也是让script在同一个进程上执行，但是原有进程则被结束
   ${str/yyy/xxx}
   ${str//yyy/xxx}
 
-  根驱动器（虚拟目录核心）
-    系统文件
-    常见目录名都基于FHS
+@根驱动器（虚拟目录核心）
+ 从文件I/O 看Linux 的虚拟文件系统
+ Linux中允许众多不同的文件系统共存，如ext2，ext3，vfat等。通过使用一套文件I/O系统调用
+ 即可对Linux中的任意文件进行操作而无需考虑其所在的集体文件格式，对文件的操作可以跨文件
+ 系统执行，万物皆文件（Linux / Unix）
 
+ 虚拟文件系统正是上述两点Linux特性的关键所在
+ 虚拟文件系统（Virtual File System，VFS），是Linux内核中的一个软件层，用于给用户空间的
+ 程序提供文件系统接口。同时，它也提供了内核中的一个 抽象功能，允许不同的文件系统共存。
+ 系统中所有的文件系统不但依赖 VFS 共存，而且也依靠 VFS 协同工作。
+
+ @@
+ 文件    ：一组在逻辑上具有完整意义的信息项的系列
+ 目录    ：目录好比一个文件夹，用来容纳相关文件
+ 目录项  ：在一个文件路径中，路径中的每一部分
+ 索引节点：用于存储文件的元数据的一个数据结构。文件的元数据，也就是文件的相关信息，和文件
+           本身是两个不同的概念
+ 超级块  ：用于存储文件系统的控制信息的数据结构。
+  
+ @@
+ 创建 以某种方式格式化磁盘的过程就是 在其之上建立一个文件系统的过程
+ 注册 向内核报到，声明自己能被内核支持，struct file_system_type实例化
+ 安装 mount操作
+ 
+ @@VFS数据结构
+ 
+ 
 @帮助命令
    man
    info
@@ -270,48 +294,35 @@ alias
 #**************************************************************************
 # Shell变量  
 #**************************************************************************
-全局环境变量
-printenv
-env
-局部环境变量
-set
-unset
+@全局环境变量
+ printenv
+ env
+@局部环境变量
+ set
+ unset
 
-登陆shell会从5个不同的启动文件里读区命令
-/etc/profile
-    主启动文件
-$HOME/.bash_profile
-$HOME/.bashrc
-i$HOME/.bash_login
-$HOME/.profile
+@登陆shell会从5个不同的启动文件里读区命令
+ /etc/profile  主启动文件
+ $HOME/.bash_profile
+ $HOME/.bashrc
+ i$HOME/.bash_login
+ $HOME/.profile
 
-交互式shell
-非交互式shell
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
->
-<
-
-wc 可以对数据中的文本进行计数
+ 交互式shell
+ 非交互式shell
+ wc 可以对数据中的文本进行计数
    文本行数
    文本词数
    文本字节数
-
-wc << EOF
-
-command1 | command4
-
-shell算术：
+ wc << EOF
+ command1 | command4
+ shell算术：
    expr
    $[1 + 5]
+ bc
+ bc中的变量只能在bc中运用
 
-bc
-bc中的变量只能在bc中运用
-
-@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@
-$? 退出状态码
+@$? 退出状态码
    0 命令成功结束
    1 一般性的未知错误
    2 不合适的shell命令
@@ -322,83 +333,11 @@ $? 退出状态码
    130    Ctrl+C 
    255    正常范围之外的退出状态码
 
-exit
+   exit
 
-
-
-
-#**************************************************************************
-# 分支  
-#**************************************************************************
-<1>
-  if command 退出状态码为0时执行
-  then
-    commands
-  else       退出状态码非0
-    commands
-  fi
-<2>
-  if command1
-  then
-    commands
-  elif command2
-  then
-    command数 
-  else  语句else属于elif代码块
-	commands
-  fi
-<3> 只有第一个返回退出状态码0的语句中的then部分会被执行
-  if command1  
-  then
-    command set 1 
-  elif command2
-  then
-    command set 2 
-  elif command3
-  then
-    command set 3 
-  elif command4 
-  then
-    command set 4
-  fi
-
-@条件测试
-if-then语句不能测试命令状态码之外的条件，test命令提供了
-在if-then语句中测试不同条件的途径，test命令中列出的条件成立
-test命令就会退出并返回退出状态码0
-test condition
-       数值比较    -eq -ge -gt -le -lt -ne
-	   字符串比较  = < > -n -z !=
-	   文件比较    -d -e -f -r -s -w -x -O -G 
-	               file1 -nt file2
-				   file1 -ot file2
-if test condition
-then
-   commands
-fi
-
-if [condition]
-then
-    commands
-fi
-
-@逻辑测试的组合
--a -o ！
-[cond] && [cond]
-[cond] || [cond]
-
-@Shell的内置命令true返回0， false 返回1
-
-
-#**************************************************************************
-# $() ${} $(())  
-#**************************************************************************
-命令替换 将里面的结果替换出来
-  $()
-  ``
-变量替换
- ${}
-
+ 
+@命令替换 将里面的结果替换出来  $() ``
+@变量替换 (引用变量的值) ${} 
  file=/dir1/dir2/dir3/my.file.txt
  shell字符串的非贪婪（最小匹配）左删除
    ${file#*/}
@@ -446,17 +385,16 @@ fi
   unset与null以及non-null这三种状态的赋值； 一般而言，与null有关，
   若不带:, null不受影响； 若带 :, 则连null值也受影响
  
- shell字符串的变量长度
-  ${#file}
- bash数组的处理方法
-  ${A[@]}  ${#A[@]}
-  ${A[*]}  ${#A[*]}
-  ${A[0]}  ${#A[0]}
+  shell字符串的变量长度
+   ${#file}
+  bash数组的处理方法
+   ${A[@]}  ${#A[@]}
+   ${A[*]}  ${#A[*]}
+   ${A[0]}  ${#A[0]}
 
-双括号
+@双括号
  (( expression )) 可以使用高级数学表达式
  expression是任意的数学赋值或比较表达式
- 
  > 不需要转义
  var=10
  if(( $var ** 2 > 90 ))
@@ -464,57 +402,26 @@ fi
    (( var2=$var ** 2 ))
  fi
 
-双方括号 提供了匹配模式
+@双方括号 提供了匹配模式
  [[ expression ]]
  
-
  case variable in
    pattern1 | pattern2）commands1；；
    pattern3）command2；；
    *） default commands；；   -->模式不匹配的情况*
  esac
- 
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-for var in list
-do
-	commands
-done
-
-for((i=1;i<=10;i++))
-do
-	echo "The next number is $i"
-done
-
-更改字段分隔符
-  IFS 内部字段分隔符
-  默认情况下bash shell会将下列字符当作字段分隔符
-  空格 制表符 换行符
-  
-  IFS.OLD=$IFS
-  IFS=$'\n'     可以指定多个IFS字符 IFS=$'\n':;"
-
-  IFS=&IFS.OLD
-
-while test command
-do
-	other commands
-done
-
-until test commands
-do
-   other commands
-done
-
-break      结束loop
-continue   强迫进入下一次循环动作
-return     结束function
-exit       结束script/shell
-
+@变量替换和赋值不能带空格
+ 为初始化的变量将会是NULL
+  hello=“A B C    D”
+  echo '$hello'
+  echo "$hello"
+  echo $hello
+  echo ${hello}
+  echo hello
 
 #**************************************************************************
-# $@ $* 
+# 参数  
 #**************************************************************************
 $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
 注意$10 是被解释成$1后跟一个0
@@ -575,6 +482,106 @@ read
 	do
 	   
 	done
+
+
+#**************************************************************************
+# 分支 循环  
+#**************************************************************************
+@if
+  <1>
+  if command 退出状态码为0时执行
+  then
+    commands
+  else       退出状态码非0
+    commands
+  fi
+  <2>
+  if command1
+  then
+    commands
+  elif command2
+  then
+    command数 
+  else  语句else属于elif代码块
+	commands
+  fi
+  <3> 只有第一个返回退出状态码0的语句中的then部分会被执行
+  if command1  
+  then
+    command set 1 
+  elif command2
+  then
+    command set 2 
+  elif command3
+  then
+    command set 3 
+  elif command4 
+  then
+    command set 4
+  fi
+
+@Shell的内置命令true返回0， false 返回1
+@条件测试
+ if-then语句不能测试命令状态码之外的条件，test命令提供了
+ 在if-then语句中测试不同条件的途径，test命令中列出的条件成立
+ test命令就会退出并返回退出状态码0
+ test condition
+       数值比较    -eq -ge -gt -le -lt -ne
+	   字符串比较  = < > -n -z !=
+	   文件比较    -d -e -f -r -s -w -x -O -G 
+	               file1 -nt file2
+				   file1 -ot file2
+ if test condition
+ then
+   commands
+ fi
+
+ if [condition]
+ then
+    commands
+ fi
+
+@逻辑测试的组合
+ -a -o ！
+ [cond] && [cond]
+ [cond] || [cond]
+
+@循环
+for var in list
+do
+	commands
+done
+
+for((i=1;i<=10;i++))
+do
+	echo "The next number is $i"
+done
+
+更改字段分隔符
+  IFS 内部字段分隔符
+  默认情况下bash shell会将下列字符当作字段分隔符
+  空格 制表符 换行符
+  
+  IFS.OLD=$IFS
+  IFS=$'\n'     可以指定多个IFS字符 IFS=$'\n':;"
+
+  IFS=&IFS.OLD
+
+while test command
+do
+	other commands
+done
+
+until test commands
+do
+   other commands
+done
+
+break      结束loop
+continue   强迫进入下一次循环动作
+return     结束function
+exit       结束script/shell
+
 
 #**************************************************************************
 #  文件描述符 I/O redirection 
