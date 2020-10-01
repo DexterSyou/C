@@ -261,9 +261,10 @@
 #*******************************************************************************
 #4.Shell变量  
 #*******************************************************************************
-	
 4-1.bash变量是不区分类型的，本质上，Bash变量都是字符串，但是也依赖于具体的上下文
-  全局环境变量
+ 内部变量
+   将会影响bash脚本的行为
+ 全局环境变量
   	 printenv
 	 env
   局部环境变量
@@ -322,9 +323,12 @@
 		${file%%/*} 拿掉第一个/及其右边的字符串  -->空
 		${file%%.*} 拿掉第一个/及其右边的字符串
 	shell字符串取子串
-		${s:pos:len} 取s，从pos（包括该字符）的长度为len的子串
-		${file:0:5}
-		${file:5:5}
+		${str:pos:len} 取str，从pos（包括该字符）的长度为len的子串
+		${str:0:5}
+		${str:5:5}
+		${*:2} 第2个和后边的所有的位置参数
+		${@:2}
+		${*:2:3} 从第2个开始，连续打印3个字符
 	shell字符串变量的替换
 		${file/dir/path}     将第一个dir替换成path
 		${file//dir/path}    将全部dir替换成为path
@@ -352,12 +356,11 @@
   unset与null以及non-null这三种状态的赋值； 一般而言，与null有关，
   若不带:, null不受影响； 若带 :, 则连null值也受影响
  
-  shell字符串的变量长度
-   ${#file}
+  shell字符串的变量长度     ${#string}
   bash数组的处理方法
-   ${A[@]}  ${#A[@]}
-   ${A[*]}  ${#A[*]}
-   ${A[0]}  ${#A[0]}
+     ${A[@]}  ${#A[@]}
+     ${A[*]}  ${#A[*]}
+     ${A[0]}  ${#A[0]}
 
 4-3.变量替换和赋值不能带空格
     为初始化的变量将会是NULL
@@ -375,6 +378,14 @@
       read a
       a=`命令的结果传给变量a`
       a=$(...)
+   
+    bash的整形变量是一个有符号的long（32bit） -2147483648～2147483647
+
+4-4.数字常量
+  Bash默认的情况下都是把数字作为10进制数来处理
+  以o开头的话就是8进制数，0x开头就是16进制数
+  BASE#NUMBER形式
+   BASE的范围2～24
 
 #*******************************************************************************
 #5.参数  
@@ -388,10 +399,12 @@
 	$# 可以抓出positional parameter 数量
 	[ $# = 0] 
 
-	$* 一个整个单一字段
-	$@ 同一个字符串多个个体
-	“$*”  
-	“$@” 
+	$* 一个整个单一字段      “$*”
+	$@ 同一个字符串多个个体  "$@"
+
+    $_ 这个变量保存之前执行的命令的最后一个参数值
+	$$ 脚本自身的进程ID
+	$! 运行在后台的最后一个作业的PID
 
 	shift 就是取消positional parameter 中最左边的参数（$0 不受影响），其余设置为1
 		shift 或 shift 1 就是取消$1 ，从而原本的$2变成$1，$3变成$2，依次类推
@@ -455,77 +468,127 @@
 	expression1 -a expression2 两个expression都为真
 	expression1 -o expression2 两个expression都为假
     
-	command1 && command2    command2 只有在command1 的 RV为0（true）   的条件下执行
-	command1 || command2    command2 只有在command1 的 RV为非0（false）的条件下执行
     
    if-then语句不能测试命令状态码之外的条件，test命令提供了
    在if-then语句中测试不同条件的途径，test命令中列出的条件成立
    test命令就会退出并返回退出状态码0
    test condition
-       数值比较    -eq -ge -gt -le -lt -ne
-	   字符串比较  = < > 
+       数值比较 []   -eq -ge -gt -le -lt -ne
+                [[]] ==   >=  >  <=   <  !=
+				     
+				可以进行模式匹配
+				  [[ $a == z* ]]    模式匹配
+				  [[ $a == "z*" ]]  字面意思相等
+				  [ $a == z* ]      文件扩展匹配 和 单词分割 有效
+				  [ $a == "z*" ]    如果$a与z*相等，字面意思相等
+       字符串比较  = < > 
 	               -n 检查字符串长度是否非0
 				   -z 检查字符串长度是否为0
 				   !=
-	   文件比较    -d -e -f -r -s -w -x -O -G 
-	               file1 -nt file2
-				   file1 -ot file2
+	   文件比较    -d 一个目录
+	               -e 文件存在
+	               -f 一般文件存在
+				   -r 是否是具有可读权限
+				   -s 文件大小不为0
+				   -w 是否是具有可写权限
+				   -x 是否是具有可执行权限
+				   -O 是否是文件的拥有者
+				   -G 文件的group-id是否与你的相同
+	               file1 -nt file2 file1比file2新
+				   file1 -ot file2 file1比file2旧
+				   file1 -ef file2 相同文件的硬链接
+
+	  ！ 反转测试结果
 
 6-3.双括号
     (( expression )) 可以使用高级数学表达式 ，expression是任意的数学赋值或比较表达式
     ((...)) 和let 结构也能够返回退出状态码
-       当它们所测试的算术表达式的结果为非0的时候，将会返回退出状态码0
-
+        当它们所测试的算术表达式的结果为非0的时候，将会返回退出状态码0
+        当表达式的结果为0时，返回的退出状态码为1
      var=10
      if (( $var ** 2 > 90 ))
      then
         (( var2=$var ** 2 ))
      fi
 
+
 6-4.双方括号 提供了匹配模式
     Bash2.02的Bash中，引入了[[...]]扩展测试命令，注意[[ 是一个关键字，并不是一个命令
     [[ expression ]]
 
-6-5.if
+6-5.if 
+6-5-1.
 <1>
-  if command 退出状态码为0时执行
-  then
-    commands
-  else       退出状态码非0
-    commands
-  fi
-<2>
-  if command1
-  then
-    commands
-  elif command2
-  then
-    command数 
-  else  语句else属于elif代码块
-	commands
-  fi
+    if command 退出状态码为0时执行
+    then
+       commands
+    else       退出状态码非0
+       commands
+    fi
+<2> if command1
+    then
+       commands
+    elif command2
+    then
+       commands 
+    else  语句else属于elif代码块
+	   commands
+    fi
 <3> 只有第一个返回退出状态码0的语句中的then部分会被执行
-  if command1  
-  then
-    command set 1 
-  elif command2
-  then
-    command set 2 
-  elif command3
-  then
-    command set 3 
-  elif command4 
-  then
-    command set 4
-  fi
+    if command1  
+    then
+       command set 1 
+    elif command2
+    then
+       command set 2 
+    elif command3
+    then
+       command set 3 
+    elif command4 
+    then
+       command set 4
+    fi
 
-  case variable in
-     pattern1 | pattern2）commands1；；
-     pattern3）command2；；
-     *） default commands；；   -->模式不匹配的情况*
-  esac
+    case variable in
+      pattern1 | pattern2）commands1；；
+      pattern3）commands2；；
+      *） commands；；   --> default模式不匹配的情况*
+    esac
+ 
+6-5-2. if能够测试任何命令，不仅仅是中括号的条件
+ if-grep结构
+ if COMMAND 结构将会返回COMMAND的退出状态 
+   dir=/home/test
+   if cd "$dir" 2>/dev/null;then
+	   echo "Now in $dir"
+   else
+	   echo "Can't change to $dir"
+   fi
 
-@循环
+ command1 && command2 结构   
+    command2 只有在command1 的 RV为0（true）   的条件下执行
+ command1 || command2 结构  
+    command2 只有在command1 的 RV为非0（false）的条件下执行
+   
+   什么是真
+      if [ 0 ]
+      if [ 1 ] 
+      if [ -1 ]
+      if [ str ]
+   什么是假
+      if [  ] #NULL 为假
+      if [ -n $x ] #未初始化的变量为假
+      x=
+      if [ -n $x ] #null变量为假
+
+ if test condition-true 结构 与 if [ condition-true ]完全相同
+	[ 是调用test命令的标识，关闭条件判断用]，[不会调用/usr/bin/[，
+	它是/usr/bin/test的符号链接
+	test命令在Bash中是内建命令，/usr/bin/test， []，/usr/bin/[
+    []    ---->      &&， || ，<  ，>  不能够使用
+	[[ ]] ---->      && ，|| ，<  ，>  能够正常使用
+
+6-6.循环
  for var in list
  do
 	commands
@@ -535,7 +598,6 @@
  do
 	echo "The next number is $i"
  done
-
 
  while test command
  do
