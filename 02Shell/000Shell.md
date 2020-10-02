@@ -5,15 +5,28 @@
 # 1.Shell
 # ------------------------------------------------------------------------------
 #                        shell
-# kernel <----------------------------------> user
+#   kernel <----------------------------------> user
+# shell是一个命令解释器，是介于操作系统内核与用户之间的一个绝缘层 
+# 
 # 每当登陆系统，我们就取得一个交互模式的shell （primary shell） 
 #*******************************************************************************
-1-1.fork
-	在process中，shell所下达的命令，均是shell所产生的子进程，这种现象可称为fork
-	如果执行shell脚本，脚本中的命令则是由另一个非交互模式的子shell来执行的
-	也就是primary shell 产生的sub shell
+1-1.sha-bang
+    #! 一个2字节的魔法数字，指定一个文件类型的特殊标记
+	   指的就是一个可执行的脚本，在sha-bang后接着是一个路径（解释程序所在的路径）
+	   Unix  默认sh
+	   Linux 默认bash
 
-	/etc/shells
+1-2.内部命令 与 内建命令
+    内建命令built in，指的就是包含在Bash工具中的命令
+	外部命令通常都需要fork 出一个单独的进程来执行，特定的内建命令需要直接访问shell的内核部分
+
+  1-2-1.fork
+	当一个命令或者shell本身需要初始化一个新的子进程来执行一个任务的时候，这种现象可称为fork
+	如果执行shell脚本，脚本中的命令则是由另一个非交互模式的子shell（子进程）来执行的
+	
+	当父进程获得了子进程的进程ID时，父进程可以给子进程传递参数
+
+  1-2-2./etc/shells
 	sh
 		burne shell       （sh
 		burne again shell （bash
@@ -22,7 +35,7 @@
 		tc shell   （tcsh
 		korn shell （ksh
 
-1-2.输入命令，碰到CR（Carriage Retrun ，由Enter键产生）
+1-3.输入命令，碰到CR（Carriage Retrun ，由Enter键产生）
     command-name options argument
     shell会依据IFS将command line所输入的文字给拆解为字段，然后
     在针对特殊的字符（meta）先做处理，最后在重组整行command line
@@ -40,7 +53,7 @@
 	    
 	IFS=; 是将IFS设置为null
  
-1-3.command line ,  meta line    
+1-4.command line ,  meta line    
 	command line的每一个charactor分为两种
       literal  也就是普通的纯文字，对shell来说没有特殊功能
       meta     对shell来说，具有特定功能的特殊保留字符
@@ -66,23 +79,8 @@
      单引号‘ ，所有的meta均被关闭
 	 双引号“ ，大部分meta都会被关闭
 	 escape\ ，紧接在escape（跳脱字符）之后的单一meta才被关闭
-     比如关闭；meta 命令，可以';'   ,  ";" ,  \;
+     比如关闭；meta 命令，可以';'   ,  ";" , 4\;
 
-1-4.帮助命令
-    man
-    info
-    -help
-
-1-5.外部命令，内建命令
-	which
-	type -a
-	type
-	history
-	
-	外部命令，会创建一个子进程  ps
-	内建命令不需要使用子进程执行
-	  cd
-	 alias
 
 #*******************************************************************************
 # 2.exec  , source
@@ -97,32 +95,66 @@
   child process去执行，当child结束后，返回parent，但parent的环境不会因child改变
   sub-shell的$pwd会因为cd而改变，返回primary shell时，$PWD是不会变更的
 
-  所谓source，就是让script在当前shell内执行，而不是产生一个sub-shell来执行。
-  exec 也是让script在同一个进程上执行，但是原有进程则被结束
+  source，就是让script在当前shell内执行，而不是产生一个sub-shell来执行。
+  exec    也是让script在同一个进程上执行，shell不会fork，并且命令的执行将会替换掉当前的shell
+          但是原有进程则被结束
 
-  当程序运行在系统上时，我们称为进程 
-	ps   
+
+2-2.帮助命令
+    man
+    info
+    -help
+
+2-3.命令
+    which
+    type -a
+    type
+    history
+    alias
+    printf format-str... parameter...
+
+2-4.作业控制命令
+    ps
 	top
-  Linux进程信号
-	1   HUP
-	2   INT
-	3   QUIT
-	9   KILL
-	11  SEGV
-	15  TERM
-	17  STOP
-	18  TSTP
-	19  CONF
-	
-	kill
-	kill -s
-	killall
+    jobs 在后台列出所有正在运行的作业
+	disown 从shell的激活作业表中删除作业
+	fg 后台->前台
+	bg 重新启动一个挂起的作业，并且在后台运行
+      fg，bg默认将当前正在运行的作业进行操作
+	wait 停止脚本运行，直到后台运行的所有作业都结束位置。
+ 
+    suspend 和Ctrl-z相似
+	logout
+    times 
+    kill     发送一个适当的结束信号
+	  kill -l 列出所有信号
+	  kill -9 必杀命令
+	killall  通过名字来杀掉一个正在运行的进程 
+		Linux进程信号
+			1   HUP
+			2   INT
+			3   QUIT
+			9   KILL
+			11  SEGV
+			15  TERM
+			17  STOP
+			18  TSTP
+			19  CONF
+    enable 禁用内建命令 或 恢复内建内建命令
+	    enable -n kill
+		enable -a cmds
+2-5.Bash执行命令的优先级
+    别名
+	关键字
+	函数
+	内建命令
+	脚本 或 可执行程序（$PATH）
 
+2-6. 
   命令列表 pwd；ls；pwd
   进程列表 （pwd；ls；pwd）
   sleep
   &
-  jobs -l
   coproc
 
 #*******************************************************************************
@@ -188,7 +220,10 @@
 		-o 存储sort结果的输出文件名
 	    -M 三个字母的月份
 	    sort -t ‘：’ -k 3 -n file
-  
+        
+     拓扑排序，读取以空格分隔的有序对，并依靠输入模式进行排序
+	    tsort
+
      删除相邻的重复行 uniq file
 		-d 只输出file重复行，且只输出一次
 		-u 只输出file中的唯一行
@@ -200,6 +235,11 @@
   
      sort file | uniq 删除重复不相邻的行
   
+     把每个tab转化为一个空格
+	   expand
+	 把每个空格转化为一tab
+	   unexpand
+
      将两个分类文本的行连接在一起
         join [options] file1 file2
   
@@ -225,17 +265,28 @@
 	     -n
 	     -c
 	     -e f -e t --> [tf]
-     查看
+        
+	    lock
+	 查看
 		file
-		cat
-		cat -n
-		cat -b
-		cat -T
 		more
 		less（less is more）
 		tail
 		tail -n（n为从头开始的行数） 
 		head -n（n为从尾开始的行数）
+        wc
+		  -w
+		  -l
+		  -c
+		  -m
+		  -L
+	  字符转换过滤器
+	    tr  
+		   tr “A-Z” “*” <filename
+           -d 删除
+		   tr -d 0-9 <filename 删除filename中的所有数字   
+           -s 去除重复字符除第一个字符以外的字符
+		   -c 反转匹配的字符集，tr只会对那些不匹配的字符起作用
 
 3-5.检测磁盘空间
     挂载 把新的存储媒体放到虚拟目录下
@@ -387,6 +438,20 @@
   BASE#NUMBER形式
    BASE的范围2～24
 
+4-5.指定变量类型
+   使用declare 或者 typeset
+   -r
+   -i
+   -a
+   -f
+   -x export 环境变量
+
+4-6.变量的间接引用
+    var1=\$$var2
+    
+	$RANDOM 0~32767
+
+
 #*******************************************************************************
 #5.参数  
 #*******************************************************************************
@@ -433,6 +498,76 @@
 	do
 	   
 	done
+
+5-3.参数替换
+    处理 和 扩展变量
+	${parameter}
+	${parameter-default}  如果变量parameter没有被声明，那么就使用默认值
+	${parameter:-default} 如果变量parameter没有被设置，那么就使用默认值
+
+    ${parameter=default}  如果变量parameter没声明，那么就把它的值设为default
+	${parameter:=default} 如果变量parameter没设置，那么就把它的值设为default
+	
+	${parameter+alt_value}  如果变量parameter被声明，那么就使用alt_value，否则就使用null字符串
+	${parameter:+alt_value} 如果变量parameter被设置，那么就使用alt_value，否则就使用null字符串
+    
+	${parameter?err_msg}    如果parameter已经被声明，那么就使用设置的值，否则打印err_msg
+	${parameter:?err_msg}   如果parameter已经被设置，那么就使用设置的值，否则打印err_msg
+
+    字符串长度 
+    ${#var} 变量$var的字符个数
+	对于array来说，
+	${#array} 表示的是数组中第一个元素的长度
+	${#array[*]} 和 ${#array[@]} 表示数组中元素的个数
+	位置参数
+	${#*} 和 ${#@} 表示位置参数的个数
+	
+    从变量的开头删除匹配$Pattern的子串，#表示匹配最短，##表示匹配最长
+	${var#Pattern} ${var##Pattern}
+	   `basename $PWD`
+	   ${PWD##*/}
+	   `basename $0`
+	   $0
+	   ${0##*/}
+	从变量的结尾删除最短或最长匹配的$Pattern的子串
+	${var%Pattern} ${var%%Pattern}
+
+    变量扩展/子串替换
+	${var:pos}       变量var从位置pos开始扩展，pos之前的字符都丢弃
+	${var:pos:len}   变量var从位置pos开始，扩展len个字符
+	${var/Pattern/Replacement} 
+	                 使用Replacement来替换变量var中的第一个Pattern的字符串
+	                 如果省略Replacement，那么第一个匹配Pattern的字符串被替换为空
+					 即删除
+	${var//Pattern/Replacement}
+	                 全局替换      
+    ${var/#Pattern/Replacement}
+	                 如果变量var的前缀匹配Pattern，那么就使用Replacement来替换匹配到Pattern的字符串
+	${var/%Pattern/Replacement}
+                     如果变量var的后缀匹配Pattern，那么就使用Replacement来替换匹配到Pattern的字符串
+    匹配所有之前声明过，并且以varprefix开头的变量
+    ${!varprefix*}
+	${!varprefix@}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #*******************************************************************************
 #6.分支 循环  
@@ -609,6 +744,11 @@
    other commands
  done
 
+ select var [in list]
+ do
+	commands 
+ done
+
  break      结束loop
  continue   强迫进入下一次循环动作
  return     结束function
@@ -777,19 +917,239 @@
 	$PS4
  -c “string” 从strings中读取命令
 
+
+
 #*******************************************************************************
-#9.资料 
+#10.命令（列表） 
 #*******************************************************************************
-# Books
-#   Advanced Bash-Scripting Guide
-# Net
-#   ChinaUnix.nex
-#   LinuxSir.org
+#
+10-1.基本命令
+  ls
+     -t 按照修改时间列出文件
+	 -R 递归列出所有文件
+	 -s 按照文件尺寸列出文件
+	 -i 显示文件的inode
+  cat concatenate 把文件的内容输出到stdout， 可多文件输出
+     -n 行前插入行号
+	 -b 用来加行号，不对空行进行编号
+	 -s 多个空行压缩成一个空行
+	 -v 可使用^标记法来echo出不可打印字符
+  tac 将会从文件结尾部分列出文件的内容
+  rev 反转每一行的内容并且输出到stdout上
+  cp
+  mv
+  rm
+  rmdir
+  mkdir
+  chmod
+  chattr 修改文件属性
+#
+10-2.复杂命令
+  find -exec cmds \；
+  xargs
+  expr
+#
+10-3.时间命令
+  date
+  zdump
+  time
+  touch
+  at
+  batch
+  cal
+  sleep
+  usleep
+  hwclock
+  clock
+
+#
+10-4.文件命令
+  参见文件3-4.一节
+
+  其他文件命令
+   fold
+   fmt
+   col
+   column
+   colrm
+   nl 加非空行行号
+   pr
+   gettext
+   msgfmt
+   iconv
+   recode
+   TeX，gs
+   enscript
+   groff，tbl，eqn
+   lex， yacc
+#
+10-5.通讯命令
+    host 通过名字或IP地址 来搜索一个互联网主机的信息
+	ipcalc 显示一个主机IP信息
+	  ipcalc -h 将会做一个DNS反向查询，通过IP找到主机
+	  nslookup
+	  dig -x
+    traceroute
+	ping
+	whois
+	finger 取得网络上的用户信息
+	chfn 修改finger命令显示出来的用户信息
+	vrfy 验证一个互联网e-mail地址
+
+    远端主机接入
+	sx，rx
+	sz，rz
+	ftp 向远端服务器上传 或 下载的工具
+    uucp，uux，cu UNIX到UNIX，cu是一个telnet缩减版
+	telnet 连接远端主机的工具和协议
+	wget工具使用非交互的形式从web 或 ftp 站点上取得 或 下载文件
+	lynx 网页浏览器
+	rlogin
+	rsh 远端shell
+	rcp
+	rsync
+    ssh  安全shell，登陆远端主机并在其上运行命令
+    scp
+	write
+	netconfig
+	Mail
+	mail
+    mailto
+	vacation
+#
+10-6.终端控制命令
+    tput
+	reset
+	clear
+	script
+	infocmp
+
+#
+10-7.数学计算命令
+    factor 将一个正数分解为多个素数
+    bc
+	dc
+#
+10-8.混杂命令
+    jot
+	seq
+	run-parts
+	yes
+	banner 将会把传递进来的参数字符串用一个ASCII字符（默认#）给画出来
+	   -w 设置宽度
+	printenv
+	lp
+	sox
+	dialog
+	doexec
+	od
+	hexdump
+	objdump
+    mcookie
+	units
+	dd
+	pathchk
+	mkfifo
+#
+10-9.系统管理命令
+   users
+     who -q
+   groups
+   chown，chgrp
+   useradd，userdel，usermod
+   id
+   groupmod
+   who
+   logname
+   su
+   sudo
+   passwd
+   last
+   newgrp
+   tty
+   stty
+   setterm
+   tset
+   wall
+   uname
+   lsof
+   strace
+   ltrace
+   nmap
+   du
+   df
+   dmesg
+   stat
+   size
+   logger
+   等等....
+
+#*******************************************************************************
+#10.函数 
+#*******************************************************************************
+函数是一个脚本代码块
+创建函数
+  function name {
+      commands	
+  }
+  
+  name（）{
+      commands
+  }
+
+返回值
+  bash shell 会把函数当作一个小型脚本，运行结束时会返回一个退出状态码
+  可以用$?来确定函数的退出状态码
+  默认退出状态码
+     函数的退出状态码是函数中最后一条命令返回的退出状态码
+  使用return命令
+     退出函数并返回特定的退出状态码
+	    函数一结束就取返回值
+	    退出状态码必须是0～255
+  使用函数输出
+     result=$(func)
+
+在函数中使用变量
+  可以使用标准的参数环境变量来标示命令行上传给函数的参数
+       函数名  $0 变量中定义
+               $1
+			   $2
+			   ...
+			   $9
+			   $# 判断传给函数的数目
+
+   全局变量
+     在shell脚本中任何地方都有效的变量
+     默认情况下，你在脚本中定义的任何变量都是全局变量
+   局部变量
+     local temp 保证了变量只局限在该函数中，  
+
+数组与函数
+  数组做参数
+  function func {
+   local newarray=（$(echo "$@")）	
+
+  }
+
+  myarray=(1 2 3 4 5)
+  func $(myarray[*])      数组分解成单个值作为参数传
+
+  从函数返回数组
+   函数用echo语句来按正确顺序输出当个数组值
+   然后脚本再将它们重新放进一个新的数组变量
+
+  fucntion func {
+    echo ${ newarray[*] }
+  }
+
+  result=($(func))
+  ${result[*]}
 
 
+递归
 
 
-
+在命令行上使用函数
 
 
 ```
