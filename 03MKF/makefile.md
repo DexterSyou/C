@@ -165,6 +165,7 @@ endif
 
 #-------------------
 #变量
+#-------------------
 1. :=  前面的变量不能使用后面的变量
 2.  =
 3. nullstring :=
@@ -236,12 +237,298 @@ endif
   <pattern ...>; : override <variable-assignment>;
   override 同样是针对于系统环境传入的变量，或是 make 命令行指定的变量。
 
+#*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
+# 条件判断
+#--------------------
+使用条件判断，可以让 make 根据运行时的不同情况选择不同的执行分支。
+条件表达式可以是比较 变量的值，或是比较变量和常量的值。
+<conditional-directive> 
+<text-if-true>
+endif
+
+<conditional-directive> 
+<text-if-true>
+else
+<text-if-false>
+endif
+
+
+ifeq (<arg1>, <arg2>)
+ifeq '<arg1>' '<arg2>'
+ifeq "<arg1>" "<arg2>"
+ifeq "<arg1>" '<arg2>'
+ifeq '<arg1>' "<arg2>"
+
+ifeq ($(strip $(foo)),)
+<text-if-empty>
+endif
+
+ifneq (<arg1>, <arg2>)
+ifneq '<arg1>' '<arg2>'
+ifneq "<arg1>" "<arg2>"
+ifneq "<arg1>" '<arg2>'
+ifneq '<arg1>' "<arg2>"
+
+fdef <variable-name>    如果变量 <variable-name> 的值非空，那到表达式为真。否则，表达式为假。
+ifdef <variable-name>   
+ifndef <variable-name>  
+
+在 <conditional-directive> 这一行上，多余的空格是被允许的，不能以 Tab 键作为开始(不
+然就被认为是命令)。而注释符 # 同样也是安全的。else 和 endif 也一样，不是以 Tab 键开始
+为了避免混乱，make 不允许把整个条件语句分成两部分放在不同的文件中 
+
+#*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
+# 函数
+#--------------------
+Makefile中可以使用函数来处理变量，让命令或是规则更为的灵活和具有智能
+$(<function> <arguments>)
+${<function> <arguments>}
+<arguments> 为函数的参数，参数间以逗号 , 分隔，而函数名和参数之间以“空格”分隔
+
+#-------------------
+#字符串处理函数
+#-------------------
+1.$(subst <from>,<to>,<text>)
+• 名称:字符串替换函数
+• 功能:把字串<text>中的<from>字符串替换成<to>。
+• 返回:函数返回被替换过后的字符串。
+  $(subst ee,EE,feet on the street)
+
+2.$(patsubst <pattern>,<replacement>,<text>)
+•名称:模式字符串替换函数。
+•功能:查找<text>中的单词(单词以“空格”、“Tab”或“回车”“换行”分隔)是否符合模式 <pattern> ，
+      如果匹配的话，则以 <replacement> 替换。
+•返回:函数返回被替换过后的字符串
+ $(patsubst %.c,%.o,x.c.c bar.c)
+ 与$(objects:.o=.c) 类似
+
+3.$(strip <string>)
+• 名称:去空格函数。
+• 功能:去掉<string>字串中开头和结尾的空字符。
+• 返回:返回被去掉空格的字符串值。
+  $(strip a b c )
+
+4.$(findstring <find>,<in>)
+ • 名称:查找字符串函数
+ • 功能:在字串<in>中查找<find>字串。
+ • 返回:如果找到，那么返回<find>，否则返回空字符串。
+   $(findstring a,a b c)
+
+5.$(filter <pattern...>,<text>)
+ • 名称:过滤函数
+ • 功能:以<pattern>模式过滤<text>字符串中的单词，保留符合模式<pattern>的单词。可以 有多个模式。
+ • 返回:返回符合模式<pattern>的字串。
+   sources := foo.c bar.c baz.s ugh.h
+   foo: $(sources)
+	cc $(filter %.c %.s,$(sources)) -o foo
+6.$(filter-out <pattern...>,<text>)
+ • 名称:反过滤函数
+
+7.$(sort <list>)
+• 名称:排序函数
+• 功能:给字符串<list>中的单词排序(升序)。
+• 返回:返回排序后的字符串。
+       $(sort foo bar lose)返回bar foo lose。
+• 备注:sort函数会去掉<list>中相同的单词。
+
+8.$(word <n>,<text>)
+• 名称:取单词函数
+• 功能:取字符串<text>中第<n>个单词。(从一开始)
+• 返回:返回字符串<text>中第<n>个单词。如果<n>比<text>中的单词数要大，那么返回空字 符串。
+  $(word 2,foo bar baz)返回值是bar。
+
+9.$(words <text>)
+• 名称:单词个数统计函数
+• 功能:统计<text>中字符串中的单词个数。
+• 返回:返回<text>中的单词数。
+  $(words,foo bar baz)返回值是3。
+  $(word $(words <text>）
+
+10.$(firstword <text>)
+• 名称:首单词函数——firstword。
+• 功能:取字符串<text>中的第一个单词。
+• 返回:返回字符串<text>的第一个单词。
+  $(firstword foo bar)返回值是foo。
+
+11.$(wordlist <ss>,<e>,<text>)
+• 名称:取单词串函数
+• 功能:从字符串<text>中取从<ss>开始到<e>的单词串。<ss>和<e>是一个数字。
+   $(wordlist2,3,foo bar baz)返回值是bar baz。
+
+利用 这个搜索路径来指定编译器对头文件的搜索路径参数 CFLAGS
+override CFLAGS += $(patsubst %,-I%,$(subst :, ,$(VPATH)))
+如果$(VPATH) 值是 src:../headers  将返回 -Isrc -I../headers  
+#--------------------
+# 文件名操作函数
+#--------------------
+每个函数的参数字符串都会被当做一个或是一系列的文件名来对待
+1.$(dir <names...>)
+• 名称:取目录函数——dir。
+• 功能:从文件名序列<names>中取出目录部分。目录部分是指最后一个反斜杠(/)之前的部分。 
+       如果没有反斜杠，那么返回 ./ 。
+• 返回:返回文件名序列<names>的目录部分。
+  $(dir src/foo.c hacks)返回值是src/ ./
+
+2.$(notdir <names...>)
+• 名称:取文件函数——notdir。
+• 返回:返回文件名序列<names>的非目录部分。
+
+3.$(suffix <names...>)
+• 名称:取後缀函数——suﬀix。
+• 返回:返回文件名序列<names>的后缀序列，如果文件没有后缀，则返回空字串。
+$(suffix src/foo.c src-1.0/bar.c  hacks)返回值是.c .c
+
+4.$(basename <names...>)
+• 名称:取前缀函数——basename。
+• 返回:返回文件名序列<names>的前缀序列，如果文件没有前缀，则返回空字串。
+$(basename src/foo.c src-1.0/bar.c hacks) 返回值是src/foo src-1.0/bar hacks
+
+5.$(addsuffix <suffix>,<names...>)
+• 名称:加后缀函数——addsuﬀix。
+
+6.$(addprefix <prefix>,<names...>)
+• 名称:加前缀函数——addprefix。
+
+7.$(join <list1>,<list2>)
+• 名称:连接函数——join。
+• 功能:把 <list2> 中的单词对应地加到 <list1> 的单词后面。
+  如果 <list1> 的单词个数要比 <list2> 的多，那么，<list1> 中的多出来的单词将保持原样。
+  如果 <list2> 的单词个数要比 <list1> 多，那么，<list2> 多出来的单词将被复制到 <list1> 中。
+• 返回:返回连接过后的字符串。
+• 示例:$(join aaa bbb,111 222 333)返回值是 aaa 111 bbb 222 333。
+
+#-------------------
+#foreach 函数
+#-------------------
+$(foreach <var>,<list>,<text>)
+
+names := a b c d
+files := $(foreach n,$(names),$(n).o)
+
+$(name) 中的单词会被挨个取出，并存到变量 n 中，$(n).o 每次根据 $(n) 计算出 一个值，
+这些值以空格分隔，最后作为 foreach 函数的返回，
+$(files) 的值是 a.o b.o c.o d.o
+
+foreach 中的 <var> 参数是一个临时的局部变量，foreach 函数执行完后，参数 <var> 的变量将不在作用，
+其作用域只在 foreach 函数当中
+
+
+#-------------------
+#  if 函数
+#-------------------
+$(if <condition>,<then-part>)
+$(if <condition>,<then-part>,<else-part>)
+if 函数很像 GNU 的 make 所支持的条件语句——ifeq
+
+#-------------------
+#call 函数
+#-------------------
+$(call <expression>,<parm1>,<parm2>,...,<parmn>)
+<expression> 参数中的变量，如 $(1) 、$(2) 等，会被参数 <parm1> 、 <parm2> 、<parm3> 依次取代
+在向call函数传递参数时,call函数在处理参数时，第2个及其之后的参数中的空格会被保留，因而可能造成一些奇怪的效果。
+在向call函数提供参数时，最安全的做法是去除所有多余的空格。call 函数是唯一一个可以用来创建新的参数化的函数。
+<expression> 的返回值就是 call 函数的返回值
+
+#-------------------
+# origin 函数
+#-------------------
+$(origin <variable>)
+origin 函数不像其它的函数，他并不操作变量的值，他只是告诉你你的这个变量是哪里来的
+<variable> 是变量的名字，不应该是引用。
+
+undefined 如果 <variable> 从来没有定义过，origin 函数返回这个值 undefined
+default 如果 <variable> 是一个默认的定义，比如“CC”这个变量，这种变量我们将在后面讲述。
+environment 如果 <variable> 是一个环境变量，并且当 Makefile 被执行时，-e 参数没有被打开。
+file 如果 <variable> 这个变量被定义在 Makefile 中。
+command line 如果 <variable> 这个变量是被命令行定义的。
+override 如果 <variable> 是被 override 指示符重新定义的。
+automatic 如果 <variable> 是一个命令运行中的自动化变量。关于自动化变量将在后面讲述。
+
+#-------------------
+#shell 函数
+#-------------------
+它的参数应该就是操作系统 Shell 的命令
+files := $(shell echo *.c)
+
+#-------------------
+#控制 make 的函数
+#-------------------
+$(error <text ...>)
+产生一个致命的错误，<text ...> 是错误信息。
+ifdef ERROR_001
+	$(error error is $(ERROR_001)) 
+endif
+
+$(warning <text ...>)
+函数很像 error 函数，只是它并不会让 make 退出，只是输出一段警告信息，而 make 继续执行。
+
+#*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
+# make的运行
+#--------------------
+# make 的退出码
+0 表示成功执行。
+1 如果 make 运行时出现任何错误，其返回 1。
+2 如果你使用了 make 的“-q”选项，并且 make 使得一些目标不需要更新，那么返回 2
+
+# 指定 Makefile 
+make –f hchen.mk
+
+# 指定目标
+有一个 make 的环境变量叫 MAKECMDGOALS ，这个变量中会存放你所指定的终极目标的列表
+
+#伪目标
+• all: 这个伪目标是所有目标的目标，其功能一般是编译所有的目标。
+• clean: 这个伪目标功能是删除所有被 make 创建的文件。
+• install: 这个伪目标功能是安装已编译好的程序，其实就是把目标执行文件拷贝到指定的目标中去。
+• print: 这个伪目标的功能是例出改变过的源文件。 
+• tar: 这个伪目标功能是把源程序打包备份。也就是一个 tar 文件。
+• dist: 这个伪目标功能是创建一个压缩文件，一般是把 tar 文件压成 Z 文件。或是 gz 文件。
+• TAGS: 这个伪目标功能是更新所有的目标，以备完整地重编译使用。
+• check 和 test: 这两个伪目标一般用来测试 makefile 的流程。
+
+#检查规则
+ -n
+ -t
+ -q
+ -W <file>
+
+# make 参数
+#*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
+# 隐含规则
+#--------------------
+make 会自动去推导这两个目标的依赖目标和生命
+1.编译 C 程序的隐含规则。
+  <n>.o 的目标的依赖目标会自动推导为 <n>.c ，并且其生成命令是 $(CC) –c $(CPPFLAGS) $(CFLAGS)
+2.编译 C++ 程序的隐含规则。
+  <n>.o 的目标的依赖目标会自动推导为 <n>.cc 或是 <n>.C ，
+  并且其生成命令是 $(CXX) –c $(CPPFLAGS) $(CFLAGS) 。
+
+等...
+
+命令变量
+命令参数
+
+模式
+%.o : %.c ; <command ......>;
+
+
 
 
 
 
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
+#Richard Stallman
+http://www.stallman.org/
+http://bbs.chinaunix.net/attachments/rms.jpg
 
+#Roland McGrath
+http://www.frob.com/~roland/
+
+
+
+
+
+#*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 
 
 ```
