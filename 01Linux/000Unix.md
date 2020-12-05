@@ -209,6 +209,63 @@
 	 S_ISLNK()
 	 S_ISSOCK()
 
+# 用户ID  组ID  &  文件访问权限
+  与一个进程相关联的ID有6个 或 更多
+    实际用户ID
+    实际组ID              
+	   实际是谁，取自口令文件中的登录项，在一个登录会话间有这些并不改变，超级用户进程有方法改变它们
+	 -----------------------------------------------
+    有效用户ID
+	有效组ID
+	附加组ID   
+	   用于文件访问权限检查
+	 ---------------------------------------------
+	保存的设置用户ID
+	保存的设置组ID    
+	   由exec 函数保存
+     ---------------------------------------------
+  当执行一个程序文件时，进程的有效用户ID 通常就是实际用户ID ，有效组ID通常就是实际组ID
+  每个文件都有所有者 stat.st_uid ，组所有者stat.st_gid
+  所有的文件类型都有访问权限
+    9个访问权限位
+	u        g        o 
+    S_IRUSR  S_IRGRP  S_IROTH
+	S_IWUSR  S_IWGRP  S_IWOTH
+	S_IXUSR  S_IXGRP  S_IXOTH
+  新文件和目录的所有权
+    
+	新文件的用户ID 设置为 进程的有效用户ID
+	新文件的组ID 可以是 进程的有效组ID
+    新文件的组ID 可以是 它所在目录的组ID
+#############
+# access 函数
+    当open函数打开一个文件时，内核以进程的有效用户ID 和 有效组ID 为基础执行其访问权限测试。
+    #include <unistd.h>
+	int access (const char *pathname, int mode)
+    按实际用户ID 和 实际组ID进行访问权限测试的，成功返回0，不成功返回-1
+	R_OK
+	W_OK
+	X_OK
+	F_OK 测试文件是否存在
+
+  umask 函数
+    为进程设置文件模式创建屏蔽字，并返回以前的值。
+    #include <sys/stat.h>
+	mode_t umask(mode_t cmask); 返回以前的文件模式创建屏蔽
+	UNIX系统的大多数用户从不处理他们的umask值，通常登录时，由shell的启动文件设置一次，然后从不改变
+  
+  chmod函数 fchmod函数
+    更改现有文件的访问权限
+    #include <sys/stat.h>
+	int chmod(const char *pathname, mode_t mode) 指定文件上进行操作
+	int fchmod(int fileds, mode_t mode)          对已打开的文件进行操作
+    成功则返回0，出错则返回-1
+   chown
+   fchown
+   lchown
+  
+  文件长度
+  
 
 
 #*********1*********2*********3*********4*********5*********6*********7*********8*********9*********0
