@@ -1,58 +1,75 @@
 ##
 
 ```
-1 内核
-  系统内存管理
-  软件程序管理
-  硬件设备管理
-     Linux将硬件设备当成特殊的文件，称为设备文件
-	 *字符型设备文件
-	   处理数据时每次只能处理一个字符的设备
-	 *块设备文件
-	   处理文件时每次能处理大块数据的设备
-	 *网络设备文件
-	   采用数据包发送 和 接受数据 的设备
-  文件系统管理
-2 GNU（GNU‘s Not Unix）
-   GNU coreutils
-   GNU/Linux shell
-      bash shell
-3 X Window
-    X.org
-  KDE
-  GNOME
-  Unity
+*********1*********2*********3*********4*********5*********6*********7*********8*********9*********0
+** 文件command **
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Linux 文件权限 
-root        UID -> 0
+*1. file 查看文件类型 *
+*2. find 查找文件 *
+    # find PATH -name FILENAME   
+    
+	find /etc -name *.conf | cpio -cov > /tmp/conf.cpio
+*3. locate 数据库查找 *
+*4. which/whereis *
+    从系统PATH变量所定义的目录中查找可执行文件的绝对路径
+*5. gzip/gunzip *
+    用来压缩和解压缩单个文件的工具
+*6. tar *
+    tar不但可以打包文件，还可以将整个文件整合成一个包
+	整合包的同时还可以使用gzip功能进行压缩
 
-useradd
-userdel
-usermod
+	tar -zcvf xxx.tgz   /xxx
+    -z 使用gzip压缩
+	-c 创建压缩文件
+	-v 显示当前被压缩的文件
+	-f 指使用文件名
+*7. bzip2 *
+    
+*8. 硬链接 ，软连接 *
+    硬链接，不允许给目录创建
+            ln file1 hardlink
+            -i 显示文件节点数
+	软连接，在同一文件系统中的文件之间
+            ln -s file01 sotflink
+*********1*********4*********3*********4*********5*********6*********7*********8*********9*********0
+** | **
 
-passwd
-chpasswd
+* grep *
+  # grep -ivnc ‘str’ file
+* sort *
+  # sort -ntkr file
+  sort -t ‘：’ -k 2
+  sort -t ‘：’ -k 2 -n 
+  cat uniq.txt | sort | uniq
+* cut 截取文本 *
+  # cut -f 指定列 -d ‘分隔符’
+  cat /etx/passwd | cut -f1 -d':'
+  cat -c1-5,7-10
+* tr 文本转换 *
+  tr '[a-z]' '[A-Z]'
+  tr -d ':'
+* paste 文本合并 *
+  # paste file1 file2
+  # paste -d: file1 file2
+* split 分割文件大小 *
+  
+
+**
+**
+*********1*********4*********3*********4*********5*********6*********7*********8*********9*********0
+** 进程 **
+**
+**
+**
+**
+**
 
 
-groupadd
-groupmod
-
-文件权限
-r w x
-4 2 1
-
-umask
-chmod 777 file
-chown
-chgrp
 
 
+*********1*********4*********3*********4*********5*********6*********7*********8*********9*********0
 #------------------------------------------------------------
-#  Command Line 
 #------------------------------------------------------------
-
 init is the parent of all processs on the system
 @/bin/bash 
   命令的优先执行顺序
