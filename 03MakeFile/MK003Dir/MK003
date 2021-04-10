@@ -1,5 +1,0 @@
-
-testMK.o : testMK.c	
-	cc -c testMK.c
-	cur-dir   := $(shell pwd)
-	@echo ${cur-dir}

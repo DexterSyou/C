@@ -1,5 +1,0 @@
-main : MK001.o
-	cc -o main MK001.o
-
-MK001.o : MK001.c MK001.h
-	cc -c MK001.c
