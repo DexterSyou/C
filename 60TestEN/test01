@@ -1,4 +1,8 @@
-a
-b
-c
-d
+
+
+wsss## This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+gy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+gfault value.

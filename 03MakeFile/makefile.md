@@ -4,35 +4,21 @@
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 #makefile 初识
 #--------------------
-#编译compile：把源文件编译成中间代码文件
-               UNIX下是.o
+#编译compile：把源文件编译成中间代码文件       UNIX下是.o  ObjectFile
  链接link。 ：把大量的Object File合成执行文件
-
-#make如何工作的
-  edit : main.o kbd.o command.o display.o \
-        insert.o search.o files.o utils.o
-	cc -o edit main.o kbd.o command.o display.o \ 
-	    insert.o search.o files.o utils.o
-  
-  在默认的方式下，也就是我们只输入 make 命令
-  1.如果找到，它会找文件中的第一个目标文件(target),上面的例子中，他会找到“edit”这个文件，
-    并把这个文件作为最终的目标文件。
-  2.如果 edit 文件不存在或是 edit 所依赖的后面的 .o 文件的文件修改时间要比 edit 这个文件新， 
-    那么，他就会执行后面所定义的命令来生成 edit 这个文件。
-  3.整个 make 的依赖性，make 会一层又一层地去找文件的依赖关系，
-    直到最终编译出第一个目标文件
 
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 #MakeFile的规则
 #--------------------
 #Makefile
-   1. 显式规则。显式规则说明了如何生成一个或多个目标文件。这是由 Makefile 的书写者明显指出要
+   1. 显式规则。
+      显式规则说明了如何生成一个或多个目标文件。这是由 Makefile 的书写者明显指出要
       生成的文件、文件的依赖文件和生成的命令。
    2. 隐晦规则。由于我们的 make 有自动推导的功能，所以隐晦的规则可以让我们比较简略地书写
       Make-file，这是由 make 所支持的。
         make看到一个.o文件，它就会自动的把.c文件加在依赖关系中。
 	    如果 make 找到一个 whatever.o ，那么 whatever.c 就会是 whatever.o 的依赖文件。
-	    并且 cc -c whatever.c 也会被推导 出来
+	    并且 cc -c whatever.c 也会被推导出来
    3. 变量的定义。在 Makefile 中我们要定义一系列的变量，变量一般都是字符串，
       这个有点像你 C 语言中的宏，当 Makefile 被执行时，其中的变量都会被扩展到相应的引用位置上。
    4. 文件指示。
@@ -44,7 +30,10 @@
 		  那么，make 还会在下面的几个目录下找:
 		  4.1.1. 如果 make 执行时有-I或--include-dir参数，那么make就会在这个参数所指定的目录下去寻找。
                  如果目录<prefix>/include(一般是:/usr/local/bin或/usr/include)存在的话，make也会去找。
-          -include <filename> 无论include过程中出现什么错误，都不要报错继续执行。
+          
+		  -include <filename> 无论include过程中出现什么错误，都不要报错继续执行。
+	      其他make的相关命令sinclude
+
 	  4.2 指根据某些情况指定Makefile中的有效部分，就像C语言中的预编译#if一样
 	  4.3 定义一个多行的命令
    5. 注释。Makefile 中只有行注释，和 UNIX 的 Shell 脚本一样，其注释是用#字符，
@@ -52,7 +41,7 @@
 
 #文件名
   默认的情况下,make命令会在当前目录下按顺序找寻文件名为“GNUmakefile”、“makefile”、“Make- file”的文件
-  如果要指定特定的 Makefile，你可以使用 make 的-f 和--file 参数，如:make -f Make.Linux。
+  如果要指定特定的 Makefile，使用 make 的-f 和--file 参数，如:make -f Make.Linux。
 
 #环境变量
   当前环境中定义了环境变量MAKEFILES ，make会把这个变量中的值做一个类似于include的动作。
@@ -70,6 +59,8 @@
   5. 为所有的目标文件创建依赖关系链。
   6. 根据依赖关系，决定哪些目标要重新生成。 
   7. 执行生成命令。
+
+  makefile的变量的展开： 依赖关系被决定使用，要生成目标时 ，变量才会在内部展开
 
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 # 规则
@@ -89,25 +80,36 @@
 	*
 	?
 	~
-   obj := $(wildcard *.c)
+	  ～/test 当前用户$HOME 目录下的test目录
+	  ～sd/test 表示用户sd宿主目录下的test目录
+	  windows下，根据环境变量HOME 耳定
+    obj := $(wildcard *.c)
+      obj是所有.c文件的集合
+    obj = *.c  
+	  obj 就是 *.c 
 
 #文件搜索
   Makefile 文件中的特殊变量 VPATH,如果没有指明这个变量，make 只会在当前的目录中去找寻依赖文件和目标文件。
-  如果定义了这个变量，那么，make 就会在当前目录找不到的情 况下，到所指定的目录中去找寻文件了。
+  如果定义了这个变量，那么，make 就会在当前目录找不到的情况下，到所指定的目录中去找寻文件了。
   VPATH = src:../headers   
     目录由“冒号”分隔。(当前目录永远是最高优先搜索的地方)
 
-  另一个设置文件搜索路径的方法是vpath
+  另一个设置文件搜索路径的方法是（ make的关键字vpath ）
+  可以指定不同的文件按照先后顺序在不同的搜索目录中
     <pattern> 指定了要搜索的文件集，而 <directories> 则 指定了 < pattern> 的文件集的搜索的目录
       vpath <pattern> <directories> 为符合模式 <pattern> 的文件指定搜索目录 <directories>。 
       vpath <pattern> 清除符合模式 <pattern> 的文件的搜索目录。
       vpath 清除所有已被设置好了的文件搜索目录。
  
     vpath %.h ../headers
-    % 的意思是匹配零或若干字符,%.h 表示所有以.h 结尾的文件
+	如果当前目录没有.h文件，在../headers目录下搜索所有的.h文件
+	% 的意思是匹配零或若干字符,%.h 表示所有以.h 结尾的文件
 
 #伪目标, 伪目标只是一个标签不会生成文件
- .PHONY:clean
+#无法生成依赖关系，和决定它是否要执行
+ 使用一个特殊标记.PHONY来显示地指明一个目标是 伪目标
+ 向make说明，不管是否有这个文件，这个目标就是 伪目标
+ .PHONY: clean
  clean : 
 	rm *.o temp
 
@@ -125,7 +127,7 @@
    $(obj):%.o:%.c
 	$(CC) -c $(CFLAGS) $< -o $@
     $< 依赖第一个文件
-	$@ 自动化变量
+	$@ 自动化变量，目标集合
 
 #自动生成依赖性
    cc -M main.c
@@ -134,29 +136,39 @@
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 # make命令&变量
 #--------------------
+
 make 会把其要执行的命令行在命令执行前输出到屏幕上。
-当我们用 @ 字符在命令行前，这个命令将不被 make 显示出来
+当我们用@字符在命令行前，这个命令将不被make显示出来
 
-make -n  只是显示命令
-make -s  全面禁止命令
-make -k  终止当前规则，继续下一个规则
-make -i  所有命令会忽略错误
-make一般是使用环境变量SHELL中说定义的系统Shell来执行命令
+make -n  --just-print       只是显示命令
+make -s  --silent  --quiet  全面禁止命令
+make -k  --keep-going       终止当前规则，继续下一个规则
+make -i  --ignore-errors    所有命令会忽略错误
 
-#命令执行
+#命令执行i
+  make的命令默认是/bin/sh------UNIX的标准Shell解释执行的
+  一般使用SHELL环境变量的解析命令
+
   上一条命令结果应用于下一条命令时，你应该使用分号分隔这两条命令
+  exec：
+	cd /home/test；pwd
+
 #命令出错
   每当命令运行完后，make 会检测每个命令的返回码，如果命令返回成功，那么 make 会执行下一条命令，
   当规则中所有的命令成功返回后，这个规则就算是成功完成了。如果一个规则中的某个命令出错了
   (命令退出码非零)，那么 make 就会终止执行当前规则，这将有可能终止所有规则的执行。
  
+  命令行前加一个 - ， 表示不管命令出不出错都是成功的
+  
  你要传递变量到下级 Makefile 中，那么你可以使用这样的声明:
  export <var ...>
  不想让某些变量传递到下级 Makefile 中，那么你可以这样声明:
  unexport <var ...>
-有两个变量一个是SHELL ，一个是 MAKEFLAGS ，这两个变量不管你是否 export， 其总是要传递到下层 Makefile中，
-MAKEFLAGS变量，其中包含了 make 的参数信息，执行“总控 Makefile”时有 make 参数或是在上层 Makefile 中定义了这个变量，
-那么MAKEFLAGS 变量将会是这些参数，并会传递到下层Makefile 中，这是一个系统级的环境变量。
+
+有两个变量一个是SHELL ，一个是 MAKEFLAGS ，这两个变量不管你是否 export， 
+其总是要传递到下层 Makefile中，MAKEFLAGS变量其中包含了 make 的参数信息，
+执行“总控 Makefile”时有 make 参数或是在上层 Makefile 中定义了这个变量，
+那么MAKEFLAGS变量将会是这些参数，并会传递到下层Makefile 中，这是一个系统级的环境变量。
 
 #定义命令包
 define cmdName
@@ -164,15 +176,20 @@ define cmdName
 endif
 
 #-------------------
-#变量
+#变量 makefile中的变量就像C中宏，代表了一个文本字符串
 #-------------------
-1. :=  前面的变量不能使用后面的变量
+1. :=  
+     前面的变量不能使用后面的变量
 2.  =
+
 3. nullstring :=
-   space := ${nullstring}
+   space := ${nullstring}# end of the line
    dir := /foo/bar    #
+
 4. FOO ?= bar
+   如果FOO没被定义，则为bar， 如果定义了，什么也不做
    variable += value
+
 5.高级变量
   5.1变量替换 $(var:a=b) 或是 ${var:a=b} 
   把变量“var”中所有以“a”字串“结尾”的“a”替换成“b”字串。这里的“结尾”意思是“空格”或“结束符”。
@@ -183,21 +200,24 @@ endif
 
   5.2 把变量的值再当成变量
   （1）
-  x=y
-  y=z
-  a := $($(x))
+     x=y
+     y=z
+     a := $($(x))
   （2）
-  first_second = Hello a = first
-  b = second
-  all = $($a_$b)
+      first_second = Hello a = first
+      b = second
+      all = $($a_$b)
   （3）
-  a_objects := a.o b.o c.o
-  1_objects := 1.o 2.o 3.o
-  sources := $($(a1)_objects:.o=.c)
+      根据a1 来变
+      a_objects := a.o b.o c.o
+      1_objects := 1.o 2.o 3.o
+      sources := $($(a1)_objects:.o=.c)
   (4)
   ifdef do_sort
-  func := sort else
-  func := strip endif
+    func := sort 
+  else
+    func := strip 
+  endif
   bar := a d b g q c
   foo := $($(func) $(bar))
  把变量的值再当成变量”这种技术，同样可以用在操作符的左边
@@ -215,8 +235,10 @@ endif
   override define foo
   bar
   endef
+
 7.多行变量
   用 define 定义的命令变量中没有以 Tab 键开头，那么 make 就不会把其认为是命令。
+
 8.环境变量
   make 运行时的系统环境变量可以在make开始运行时被载入到Makefile文件中，
   但是如果Makefile中已定义了这个变量，或是这个变量由make命令行带入，
@@ -240,8 +262,10 @@ endif
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
 # 条件判断
 #--------------------
+
 使用条件判断，可以让 make 根据运行时的不同情况选择不同的执行分支。
 条件表达式可以是比较 变量的值，或是比较变量和常量的值。
+
 <conditional-directive> 
 <text-if-true>
 endif
@@ -269,12 +293,14 @@ ifneq "<arg1>" "<arg2>"
 ifneq "<arg1>" '<arg2>'
 ifneq '<arg1>' "<arg2>"
 
-fdef <variable-name>    如果变量 <variable-name> 的值非空，那到表达式为真。否则，表达式为假。
-ifdef <variable-name>   
-ifndef <variable-name>  
+如果变量 <variable-name> 的值非空，那到表达式为真。否则，表达式为假。
+ifdef <variable-name>              测试变量是否有值   
+ifndef <variable-name>             
 
-在 <conditional-directive> 这一行上，多余的空格是被允许的，不能以 Tab 键作为开始(不
-然就被认为是命令)。而注释符 # 同样也是安全的。else 和 endif 也一样，不是以 Tab 键开始
+在 <conditional-directive> 这一行上，多余的空格是被允许的，不能以Ta 键作为开始(不
+然就被认为是命令)。而注释符 # 同样也是安全的。else和endif也一样，不是以Tab键开始
+make是在读取MakeFile时候，就计算条件表达式的值，并根据条件表达式的值来选择语句
+自动化变量是在运行时才有的，所以不能放在条件表达式中
 为了避免混乱，make 不允许把整个条件语句分成两部分放在不同的文件中 
 
 #*********1*********2*********3*********4*********5*********6********7*********8*********9*********0
@@ -499,16 +525,16 @@ make –f hchen.mk
 make 会自动去推导这两个目标的依赖目标和生命
 1.编译 C 程序的隐含规则。
   <n>.o 的目标的依赖目标会自动推导为 <n>.c ，并且其生成命令是 $(CC) –c $(CPPFLAGS) $(CFLAGS)
+
 2.编译 C++ 程序的隐含规则。
   <n>.o 的目标的依赖目标会自动推导为 <n>.cc 或是 <n>.C ，
   并且其生成命令是 $(CXX) –c $(CPPFLAGS) $(CFLAGS) 。
-
-等...
 
 命令变量
 命令参数
 
 模式
+% 表示长度任意非空的字符串
 %.o : %.c ; <command ......>;
 
 
