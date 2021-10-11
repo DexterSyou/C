@@ -85,7 +85,7 @@
 
 		   mktemp testing.XXXXXX    # mktemp 命令会用6个字符码替换6个X
            mktemp -t testing.XXXXXX # 强制mktemp命令在/tmp目录下来创建该文件，并返回用来创建临时文件的全路径
-		   mktemp -d dir.XXXXXX     #创建临时目录
+		   mktemp -d dir.XXXXXX     # 创建临时目录
 	  （9）记录消息
 	       tee 将从STDIN过来的数据同时发往两处（STDOUT 与 tee命令行所指定的文件名）
 		   默认情况下，tee命令会在每次使用时覆盖输出文件内容
@@ -115,5 +115,4 @@
 
 
 ```
-
 
