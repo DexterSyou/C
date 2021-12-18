@@ -8,35 +8,38 @@
 	 可以唯一标识会话中打开的文件。每个进程最多可以有九个文件描述符。
 
      三个特殊的文件描述符会处理脚本的输入和输出
-     STDIN  0  shell的标准输入
-     <  Linux会用重定向指定文件来替换标准输入文件描述符
-	 0<
-	    它会读取文件并提取数据
-	    许多bash 命令能接受STDIN的输入 例如：cat ，使用 < 强制cat接受来自另一个非STDIN文件的输入
-     STDOUT 1  shell标准输出
-     > 标准输出流会被shell重定向到指定文件
-	 1>
-	 >>
-     STDERR 2  shell标准错误
-     shell或shell中运行的程序和脚本出错时生成的错误消息都会发送到这个位置
-     2> 
+       0  STDIN文件描述符代表shell的标准输入。
+       <  Linux会用重定向指定文件来替换标准输入文件描述符
+	       许多bash 命令能接受STDIN的输入 例如：cat ，使用 < 强制cat接受来自另一个非STDIN文件的输入
+      
+	   1  STDOUT文件描述符代表shell的标准输出
+       > 标准输出流会被shell重定向到指定文件
+     
+	   2  STDERR文件描述符代表shell的标准错误输出
+       shell或shell中运行的程序和脚本出错时生成的错误消息都会发送到这个位置
+       默认情况下，STDERR文件描述符会和STDOUT文件描述符指向同样的地方
+	 
+	 2> 只重定向错误
      &> 将STDERR和STDOUT的输出重定向到同一个输出文件
         ls -al test1 test2 &> test3
+
    #2)在脚本中重定向输出
-     （1）临时重定向
-	       >&2  脚本的STDERR文件描述符所指向的位置显示文本
+     （1）临时重定向 >&2  脚本的STDERR文件描述符所指向的位置显示文本
 		  
 		  ---CODE---
 		  #testfile1的内容
           echo "This is an error" >&2  # 
-         
-		  #COMMAND 
+          #COMMAND 
           testfile1 2> testfile2       
 		  cat testfile2                # This is an error
-     （2）用exec重定向shell在脚本执行期间重定向某个特定文件描述符
+    
+	#3) 用exec重定向shell在脚本执行期间重定向某个特定文件描述符
 	      exec命令启动一个新shell
-   #3)在脚本中重定向输入
-      exec 0< testfile
+   
+        exec 0< testfile
+        exec 1> testfile
+        exec 2> testfile
+   
    #4)创建自己的重定向
       （1）创建文件描述符
        exec命令来给输出分配文件描述符，和标准的文件描述符一样，
