@@ -50,7 +50,7 @@ int main(int argc ,char *argv[]){
        printf("argv[%d]=%d\n",i+1,testAry[i]);
    }
    printf("------After Merging Sort:------ \n");
-   merge_sort(testAry,0,7);
+   merge_sort(testAry,0,argc-2);
    for(int i=0;i<SIZE;i++){
        printf("argv[%d]=%d\n",i+1,testAry[i]);
    }
