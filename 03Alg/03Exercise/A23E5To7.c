@@ -18,7 +18,11 @@ int binarySearch(int array[], ){
   }
   return -1;
 }
+二分查找树
+层数 lgn
+层级总时间为常量级别c
 
+T（n）= clgn
 2.3-6
   如果改用二分查找来替代第5~7行代码，那么二分查找i的时间开销将会是θ(lgn)，
   但是将A[i..j-1]的元素全部往后赋值的时间开销依然是θ(n)，则最终整个INSERTION-SORT的时间开销依然是θ(n^2) 
