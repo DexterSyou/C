@@ -11,6 +11,12 @@ int main(void){
   status = scanf("%ld",&num);
   //
   // p68.c status = 1	
+  //	
+  // p69.c 
+  /*   _Bool   input_is_good 
+      input_is_good = scanf("%ld",&num);	
+      while(input_is_good){
+  */ 	
   while(status == 1){
      sum = sum + num;
 	 printf("Please enter next integer (q to quit):");
