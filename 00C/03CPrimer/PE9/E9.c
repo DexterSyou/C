@@ -1,12 +1,12 @@
 #include <stdio.h>
-void to_binary(unsigned long n);
+void to_binary(unsigned long n, unsigned short h);
 
 int main(void){
   unsigned long number;
   printf("Enter an integer(q to quit): \n");
   while(scanf("%lu",&number)==1){
 	  printf("Binary equivalent: ");
-	  to_binary(number);
+	  to_binary(number,8);
 	  putchar('\n');
 	  printf("Enter an integer(q to quit): \n");
   }
@@ -14,11 +14,10 @@ int main(void){
   return 0;
 }
 
-void to_binary(unsigned long n){
-   int r;
-   r = n % 2; 
-   if(n >=2)
-	   to_binary(n/2);
+void to_binary(unsigned long n, unsigned short h){
+   int r = n % h; 
+   if(n >=h)
+	   to_binary(n/h, 8);
    putchar('0'+r);
    return;
 }
