@@ -15,7 +15,7 @@ const char *months[12] = {"January","February","March","April","May","June","Jul
 //
 int isLeap(int year);
 int computeDays(DATE *ptr, int year,int month);
-void toMonthNo(const char *month, int *ptr);
+void toMonthNo(const char month[], int *ptr);
 
 int main(void){
    
@@ -54,9 +54,9 @@ int main(void){
     return 0;
 }
 
-void toMonthNo(const char *month, int *ptr){
+void toMonthNo(const char month[], int *ptr){
     for(int i=0;i<12;i++)
-      if((strcmp(*month,months[i]))==0)
+      if((strcmp(month,months[i]))==0)
           *ptr = i;
 }
 
