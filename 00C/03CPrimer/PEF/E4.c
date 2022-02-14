@@ -30,6 +30,7 @@ int checkBits(int num, int bpos){
   }
   return 0;
   */
+  //右移产生动态掩码
   return  (num & (1<<(bpos-1))); 
     
 }
