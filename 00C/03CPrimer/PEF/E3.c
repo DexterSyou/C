@@ -18,11 +18,16 @@ int main(){
 
 int countBits(int num){
   int count=0;  
+    /*
   for(int i=0;i<size;i++,num>>=1){
       if((num & mask)==mask){
           count++; 
       }
-  }
+  }*/
+  while(num){
+    count += (num & mask);
+    num >>= 1;
+  }  
   return count;
 }
 
