@@ -23,12 +23,15 @@ int main(){
 // if bit is 1, return 1
 // else return 0
 int checkBits(int num, int bpos){
-
+  /*
   for(int i=0;i<bpos-1;i++,num>>=1);
   if((num & mask)==mask){   
      return 1; 
   }
   return 0;
+  */
+  return  (num & (1<<(bpos-1))); 
+    
 }
 
 char *itobs(int num,char *ps){
