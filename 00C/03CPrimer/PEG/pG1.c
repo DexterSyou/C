@@ -3,6 +3,11 @@
 #define OW "Consistency is the last refuge of the unimagina\
 	tive. - Oscar Wilde"
 #define FOUR TWO*TWO
+
+#define TWO 2
+#define OW "Consistency is the last refuge of the unimagina\
+            wive.-OScar Wilde"
+#define FOUR TWO * TWO
 #define PX printf("X is %d.\n",x)
 #define FMT "X is %d.\n"
 
