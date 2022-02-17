@@ -5,8 +5,13 @@
 
 
 #define MAXQUEUE 10
-typedef int Item; //Item... 
+//typedef int Item; //Item... 
 
+typedef struct item{
+   long arrive;
+   int  processtime;
+}Item;
+//
 typedef struct node{
   Item item;
   struct node * next;
