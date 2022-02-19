@@ -10,38 +10,37 @@ const char *jtbd[]={"    public static void main(String []args){",
                     "    }",
 					"}"
                       };
-const char  jex[] = ".java"; 
 //
 void fpnewline(FILE *);
 //
 int main(int argc, char *argv[]){
 
-   if(argc!=4){
-	   fprintf(stderr,"Usage. MJST JavaName (P or E) (1~Z)\n");
+   if(argc!=2){
+	   fprintf(stderr,"Usage. MJST JavaName\n");
 	   exit(1);
    }
 
    char jName[NAME_SIZE];  
    char jhead[JTNM_SIZE];
    //
-   strcpy(jName,argv[2]);
-   strcat(jName,argv[3]);
-   strcat(jName,argv[1]);
-   //
-   strcpy(jhead,"public class ");
-   strcat(jhead,jName);
-   strcat(jhead," {");
-   //
-   strcat(jName,jex);
-   //
-   printf("Create the file %s\n.",jName);
+   strcpy(jName,argv[1]);
+   
+   //Create file.
    FILE * fp;
-
    if((fp=fopen(jName,"w"))==NULL){
      fprintf(stderr,"Can't open the file!\n");
-	   exit(56);
+	 exit(56);
+   }else{
+     printf("Create the file %s\n.",jName);
    }
    //
+   strcpy(jhead,"public class ");
+   char *find;
+   find = strchr(jName,'.');
+   if(find) 
+	  *find = '\0';
+   strcat(jhead,jName);
+   strcat(jhead," {");
    fputs(jhead,fp);
    for(int i=0;i<3;i++){
      fpnewline(fp);

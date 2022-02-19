@@ -31,7 +31,7 @@ public class P2Overloaded{
    }
 }
 
-//******OverLoaded Method   ************************************
+//******OverLoaded   ************************************
 class Tree{
 
    int height;
@@ -104,10 +104,12 @@ class PrimitiveOverloading{
   //Test  PrimitiveOverloading
   void testConstVal(){
       prt("Testing with 5");
+	  //常数被当作int
       f1(5);f2(5);f3(5);f4(5);f5(5);f6(5);f7(5);
   }
   void testChar(){
       char x='x';
+	  //如果没有匹配的char参数，char直接提升为int
       prt("char argument:");
       f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
   }
