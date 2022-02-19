@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NAME_SIZE 30 // 预估20个
+#define NAME_SIZE 50 // 预估20个
 #define JTNM_SIZE 50
 #define CONTENT_SIZE 200
 
@@ -16,21 +16,24 @@ void fpnewline(FILE *);
 //
 int main(int argc, char *argv[]){
 
-   if(argc!=2){
-	   fprintf(stderr,"Usage. MJST JavaName\n");
+   if(argc!=4){
+	   fprintf(stderr,"Usage. MJST JavaName (P or E) (1~Z)\n");
 	   exit(1);
    }
 
    char jName[NAME_SIZE];  
    char jhead[JTNM_SIZE];
    //
-   strncpy(jName,argv[1],strlen(argv[1]));
-   strcat(jName,jex);
+   strcpy(jName,argv[2]);
+   strcat(jName,argv[3]);
+   strcat(jName,argv[1]);
    //
    strcpy(jhead,"public class ");
-   strcat(jhead,argv[1]);
+   strcat(jhead,jName);
    strcat(jhead," {");
-
+   //
+   strcat(jName,jex);
+   //
    printf("Create the file %s\n.",jName);
    FILE * fp;
 

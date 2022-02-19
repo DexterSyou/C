@@ -172,8 +172,8 @@ static Node *MakeNode(const Item *pi){
 	new_node = (Node *)malloc(sizeof(Node));
 	if(new_node !=NULL){
 	  new_node->item = *pi;
-	  new_node = NULL;
-	  new_node = NULL; 
+	  new_node->left = NULL;
+	  new_node->right = NULL; 
 	}
     return new_node;
 }
@@ -216,7 +216,7 @@ static void DeleteNode(Node **ptr){
         *ptr = (*ptr)->left;
         free(temp);
     }else{
-      for(temp=(*ptr)->left;temp->right!=NULL;temp->right)
+      for(temp=(*ptr)->left;temp->right!=NULL;temp=temp->right)
            continue;
       temp->right = (*ptr)->right;
       temp = *ptr;

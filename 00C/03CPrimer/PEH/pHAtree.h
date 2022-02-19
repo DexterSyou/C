@@ -19,7 +19,7 @@ typedef struct tree{
    int size;
 }Tree;
 
-void initializeTree(Tree *ptree);
+void InitializeTree(Tree *ptree);
 bool TreeIsEmpty(const Tree *ptree);
 bool TreeIsFull(const Tree *ptree);
 int  TreeItemCount(const Tree *ptree);

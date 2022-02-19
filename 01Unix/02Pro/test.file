@@ -1,7 +1,0 @@
-(lldb) target create "./a.out"
-Current executable set to './a.out' (x86_64).
-(lldb) settings set -- target.run-args  "1"
-
-ss
-ss
-ss
