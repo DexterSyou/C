@@ -22,6 +22,9 @@ static void DeleteAllNodes(Node *ptr);
 void InitializeTree(Tree *ptree){
     ptree->root = NULL;
     ptree->size = 0;
+	/*
+	 *Tree root is Null ,no Nodes
+	 */
 }
 //
 bool TreeIsEmpty(const Tree *ptree){
@@ -43,6 +46,7 @@ bool TreeIsFull(const Tree *ptree){
 int TreeItemCount(const Tree *ptree){
     return ptree->size;
 }
+
 //
 bool AddItem(const Item *pi,Tree *ptree){
 
@@ -139,7 +143,7 @@ static void AddNode(Node *new_node, Node *root){
         if(root->right==NULL){
              root->right = new_node;
         }else{
-            AddNode(new_node,root->left);
+            AddNode(new_node,root->right);
         }
    }else{
         fprintf(stderr,"location error in AddNode()\n");     
@@ -180,8 +184,8 @@ static Node *MakeNode(const Item *pi){
 //
 static Pair SeekItem(const Item *pi,const Tree *ptree){
 
-   Pair look;
-   look.parent = NULL;
+   Pair look;              //Node p ,Node c
+   look.parent = NULL;    
    look.child = ptree->root;
 
    if(look.child == NULL){
