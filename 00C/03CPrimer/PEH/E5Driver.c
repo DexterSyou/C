@@ -27,14 +27,9 @@ int main(void){
         idx++;
     }    
     Item popItem;
-    while(true){
-        if(!EmptyStack(&strline)){
-            Pop(&popItem,&strline);
-            printf("Pop a item : %c \n", popItem.ch);
-        }else{
-            printf("Stack is empty, has no item.\n");
-            break;
-        }
+    while(!EmptyStack(&strline)){
+       Pop(&popItem,&strline);
+       printf("Pop a item : %c \n", popItem.ch);
     }
 
 
