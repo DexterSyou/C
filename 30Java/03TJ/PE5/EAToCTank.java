@@ -1,4 +1,4 @@
-public class P4Tank{
+public class EAToCTank{
 
     boolean empty = false;
       
@@ -14,8 +14,8 @@ public class P4Tank{
     }
 
     public static void main(String []args){
-        new Tank().makefull();
-        new Tank();  
+        new EAToCTank().makefull();
+        new EAToCTank();  
         System.gc();   
     }
 }
