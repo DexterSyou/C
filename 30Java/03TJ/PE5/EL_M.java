@@ -2,7 +2,7 @@ enum Coin{ //enum 产生枚举类时，某些编译器的行为
    ONE,TWO,THREE,FOUR,FIVE,SIX //常量
 }  //会生成Coin.class
 
-public class Test{
+public class EL_M{
 
     public static void main(String[] args){
        //
