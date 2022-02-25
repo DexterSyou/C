@@ -1,9 +1,11 @@
-public class P9ComExtnds{
+public class P9EDComInhe{
 
     public static void main(String[] args){
     Car car = new Car();
     car.left.window.rollup();
-    car.wheel[0].inflate(72);
+    car.wheels[0].inflate(72);
+    //
+    car.service();
     }
 }
 
@@ -42,8 +44,13 @@ class Car{
     public Door left = new Door(),
                 right = new Door();
     public Car(){
-        for(int i=0;i<4;i++)}{
-            wheel[i] = new Wheel();
+        for(int i=0;i<4;i++){
+            wheels[i] = new Wheel();
         }
-    }             
+    }      
+
+    //E14
+    public void service(){
+        left.open();
+    }       
 }
