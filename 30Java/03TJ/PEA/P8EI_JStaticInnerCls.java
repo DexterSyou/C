@@ -1,4 +1,4 @@
- public class P8EI_JInInterfaceInnerCls{
+ public class P8EI_JStaticInnerCls{
 
     public static void main(String[] args){
          //
