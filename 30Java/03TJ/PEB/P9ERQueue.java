@@ -1,5 +1,6 @@
 import java.util.*;
 class P9ERQueue {}
+
 //**************************************** */
 //队列常被当作一种可靠的将对象从程序的某个区域传输到另一个区域的途径
 class QueueDemo {
@@ -69,3 +70,48 @@ class E27{
     }
 }
 
+//
+/*优先级队列声明了一个弹出元素最需要的元素*/
+class PriorityQueueDemo {
+
+    public static void main(String[] args){
+        //1
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<Integer>();
+        Random rand = new Random(47);
+        for(int i=0;i<10;i++){
+            E28
+            // rand.nextDouble(i+10.0)....
+            priorityQueue.offer(rand.nextInt(i+10));
+        }  
+        QueueDemo.printQ(priorityQueue);
+        //2
+        List<Integer> ints = Arrays.asList(25,22,20,18,14,9,3,1,1,2,3,9,14,18,21,23,25);
+        priorityQueue = new PriorityQueue<Integer>(ints);
+        QueueDemo.printQ(priorityQueue);
+        //3 Collections.reverseOrder()反序
+        priorityQueue = new PriorityQueue<Integer>(ints.size(),Collections.reverseOrder());
+        priorityQueue.addAll(ints);
+        QueueDemo.printQ(priorityQueue);
+        //4
+        // E29 class Str{}
+        String fact = "EDUCATION SHOULD ESCHEW OBFUSCATION";
+        List<String> strings = Arrays.asList(fact.split(""));
+        PriorityQueue<String> stringPQ = new PriorityQueue<String>(strings);
+        QueueDemo.printQ(priorityQueue);
+        //5
+        stringPQ = new PriorityQueue<String>(strings.size(),Collections.reverseOrder());
+        stringPQ.addAll(strings);
+        QueueDemo.printQ(stringPQ);
+        //6
+        Set<Character> charSet = new HashSet<Character>();
+        for(char c : fact.toCharArray()){
+            charSet.add(c);
+        } 
+        PriorityQueue<Character> characterPQ = new PriorityQueue<Character>(charSet);
+        QueueDemo.printQ(characterPQ);
+
+    }
+}
+/*
+ Integer String Character 自然排序
+ */
