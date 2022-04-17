@@ -42,6 +42,8 @@ class SweetShop {
 
     }
 }
+//E7
+//Class c = null; c = Class.forName(args[0]);
 //************************************************************************ */
 interface HasBatteries {}
 interface Waterproof {}
@@ -98,3 +100,73 @@ class ToyTest {
   }
 }
 //************************************************************************ */
+//E8
+class E8A {}
+class E8B extends E8A {}
+class E8C extends E8B {}
+
+class E8 {
+  static void Aa(Class obj){
+    System.out.println(obj.getName());
+	try{ 
+	  Aa(obj.getSuperclass());
+	}catch(Exception e){}
+  } 
+  public static void main(String[] args){
+     Class c = null;
+	 try{
+	   c = Class.forName("E8C");
+	   //E9
+	   System.out.println(c.getDeclaredFields());
+	   //
+	   Aa(c);
+	 }catch(Exception e){
+	   e.printStackTrace(System.out);
+	 }
+  }
+}
+
+//EA
+class EA {
+  static void Aa(Class obj){
+    System.out.println(obj.getName());
+	try{
+	  Aa(obj.getSuperclass());
+	}catch(Exception e){}
+  }	
+  public static void main(String[] args){
+    char[] a = new char[5];
+	try{
+	  Class c = a.getClass();
+      Aa(c);
+	}catch(Exception e){
+	  e.printStackTrace(System.out);
+	}
+  
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
