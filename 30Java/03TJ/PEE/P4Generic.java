@@ -231,26 +231,119 @@ class PetCount {
   }
 }
 
+class LiteralPetCreator extends PetCreator {
 
+  @SuppressWarnings("unchecked")
+  public static final List<Class<? extends Pet>> allTypes = 
+  Collections.unmodifiableList(Arrays.asList(Pet.class,Dog.class,Cat.class,Rodent.class,
+				 Mutt.class,Pug.class,EgyptianMau.class,Manx.class,
+				 Cymric.class,Rat.class,Mouse.class,Hamster.class));
+  private static final List<Class<? extends Pet>> types = 
+	  allTypes.subList(allTypes.indexOf(Mutt.class),allTypes.size());
+  public List<Class<? extends Pet>> types() {
+    return types;
+  }
 
+  public static void main(String[] args){
+    System.out.println(types);
+  }
+}
 
+class Pets {
+  
+  public static final PetCreator creator = 
+	   new LiteralPetCreator();
+  public static Pet randomPet(){
+      return creator.randomPet();
+  }
+  public static Pet[] createArray(int size){
+    return creator.createArray(size);
+  }
+  public static ArrayList<Pet> arrayList(int size){
+    return creator.arrayList(size);
+  }
+}
 
+class PetCount2 {
+   public static  void main(String[] args){
+     PetCount.countPets(Pets.creator);
+   }
+}
 
+//********************************************
+/*
+class PetCount3 {
+   static class PetCounter extends LinkedHashMap<Class<? extends Pet>,Integer> {
+     public PetCounter(){
+	 //  super(mapData.map(LiteralPetCreator.allTypes,0));
+	 }
+   }
+   public void count(Pet pet){
+     for(Map.Entry<Class<? extends Pet>,Integer>pair : entrySet())
+	    if(pair.getKey().isInstance(pet))
+		  put(pair.getKey(),pair.getValue() + 1);
+   }
+   //
+   public String toString(){
+     //...
+   }
+   public static void main(String[] args){
+     PetCounter PetCount = new PetCounter();
+	 System.out.println(pet.getClass().getSimpleName() + " ");
+	 PetCount.count(pet);
+   }
+}
+*/
+//********************************************************
+class TypeCounter extends HashMap<Class<?>,Integer> {
+  
+  private Class<?> baseType;
+  public TypeCounter(Class<?> baseType){
+    this.baseType = baseType;
+  }
+  public void count(Object obj){
+    Class<?> type = obj.getClass();
+	if(!baseType.isAssignableFrom(type))
+		throw new RuntimeException(obj + "incorrect type : " 
+		+ type + ", should be type or subtype of "
+		+ baseType);
+    countClass(type); 
+  }
+  private void countClass(Class<?> type){
+    Integer quantity = get(type);
+	put(type,quantity==null?1:quantity+1);
+	Class<?> superClass = type.getSuperclass();
+	if(superClass !=null && baseType.isAssignableFrom(superClass))
+		countClass(superClass);
+  }
+  public String toString(){
+    StringBuilder result = new StringBuilder("{");
+	for(Map.Entry<Class<?>,Integer> pair : entrySet()){
+	  result.append(pair.getKey().getSimpleName());
+	  result.append("=");
+	  result.append(pair.getValue());
+	  result.append(",");
+	}
+	result.delete(result.length()-2,result.length());
+	result.append("}");
+	return result.toString();
+  }
+}
 
+class PetCount4 {
+  public static void main(String[] args){
+    TypeCounter counter = new TypeCounter(Pet.class);
+	for(Pet pet : Pets.createArray(20)){
+	  System.out.print(pet.getClass().getSimpleName()+" ");
+	  counter.count(pet);
+	}
+    System.out.println();
+	System.out.println(counter);
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+//E11~E13
+//EB EC ED
 
 
 
